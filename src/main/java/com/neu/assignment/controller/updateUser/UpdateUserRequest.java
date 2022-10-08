@@ -1,12 +1,12 @@
 package com.neu.assignment.controller.updateUser;
 
-//import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 public class UpdateUserRequest {
     private String first_name;
     private String last_name;
     private String password;
-//    @JsonIgnore
+    @JsonIgnore
     private String username;
 
     public String getFirst_name() {
