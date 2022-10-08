@@ -16,7 +16,7 @@ APIs
 - Expected response: HTTP 200 OK
 
 (2) **Create User API**
-- Path: ``/v1/user/addUser``
+- Path: ``/v1/account/addUser``
 - HTTP Method POST
 - Parameters:
 ```
@@ -44,7 +44,7 @@ APIs
     - HTTP **400** Bad Request if user already exists
       
 (3) **Put User API**
-- Path: ``/v1/user/updateUser``
+- Path: ``/v1/account/updateUser``
 - HTTP Method PUT
 - Parameters:
 ```
@@ -61,7 +61,7 @@ APIs
     - HTTP **400** Bad Request if update user request is invalid
 
 (4) **Get User**
-- Path: ``/v1/user/getUser``
+- Path: ``/v1/account/getUser``
 - HTTP Method GET
 - Parameters: None
 - Auth: Basic auth (username/password)
@@ -101,7 +101,7 @@ Users Database
 
 Web service configuration
 ----------------------
-- Port Number: 8080
+- Port Number: 3001
 - HTTP protocol
 
 Build and running webapp
@@ -116,12 +116,12 @@ cd webapp
 ```
 
 (2) Start the web app on local host.
-The port number is 8080.
+The port number is 3001.
 Run below command in the terminal
 ```
 curl -v http://localhost:8080/healthz
 ```
 (3) Testing the service APIs manually (using Postman): In postman, send 
-- ``GET`` request to ``http://localhost:8080/v1/user/getUser`` and verify the response
-- ``POST`` request to ``http://localhost:8080/v1/user/addUser`` and verify the response
-- ``PUT`` request to ``http://localhost:8080/v1/user/updateUser`` and verify the response
+- ``GET`` request to ``http://localhost:3001/v1/account/getUser`` and verify the response
+- ``POST`` request to ``http://localhost:3001/v1/account/addUser`` and verify the response
+- ``PUT`` request to ``http://localhost:3001/v1/account/updateUser`` and verify the response
