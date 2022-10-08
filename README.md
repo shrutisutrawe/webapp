@@ -101,7 +101,7 @@ Users Database
 
 Web service configuration
 ----------------------
-- Port Number: 3001
+- Port Number: 8080
 - HTTP protocol
 
 Build and running webapp
@@ -116,12 +116,12 @@ cd webapp
 ```
 
 (2) Start the web app on local host.
-The port number is 3001.
+The port number is 8080.
 Run below command in the terminal
 ```
 curl -v http://localhost:8080/healthz
 ```
 (3) Testing the service APIs manually (using Postman): In postman, send 
-- ``GET`` request to ``http://localhost:3001/v1/account/getUser`` and verify the response
-- ``POST`` request to ``http://localhost:3001/v1/account/addUser`` and verify the response
-- ``PUT`` request to ``http://localhost:3001/v1/account/updateUser`` and verify the response
+- ``GET`` request to ``http://localhost:8080/v1/account/getUser`` and verify the response
+- ``POST`` request to ``http://localhost:8080/v1/account/addUser`` and verify the response
+- ``PUT`` request to ``http://localhost:8080/v1/account/updateUser`` and verify the response
