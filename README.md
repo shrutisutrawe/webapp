@@ -1,2 +1,127 @@
-# webapp
-This is a organization created for CSYE6225 assignments
+##Summary
+
+This repository contains source for a webservice built using Java/Spring-boot based on REST architecture
+
+##Tools and Technologies
+| Infra                | Tools/Technologies                   |
+|----------------------|--------------------------------------|
+| Webapp               | Java, Maven, Spring Boot             |
+| Github               | Github Actions
+| Database             | MySQL
+APIs
+----------------------
+(1) **Healthz API**
+- Path: ``healthz``
+- Parameters: None
+- Expected response: HTTP 200 OK
+
+(2) **Create User API**
+- Path: ``/v1/user/addUser``
+- HTTP Method POST
+- Parameters:
+```
+ {
+     "username": "...",
+     "first_name": "...",
+     "last_name": "...",
+     "password": "..."
+  }
+```
+- Auth: None
+- Expected response:
+    - HTTP **201** Created indicating the user was created
+      ```
+      {
+         "id": "...",
+         "first_name": "...",
+         "last_name": "...",
+         "username": "...",
+         "account_created": "...",
+         "account_updated": "..."
+      }
+      ```
+    - HTTP **400** Bad Request if create user request is invalid
+    - HTTP **400** Bad Request if user already exists
+      
+(3) **Put User API**
+- Path: ``/v1/user/updateUser``
+- HTTP Method PUT
+- Parameters:
+```
+ {
+     "first_name": "...",
+     "last_name": "...",
+     "password": "...",
+  }
+```
+- Auth: Basic auth (username/password)
+- Expected response:
+    - HTTP **204** No Content indicating user details were updated
+    - HTTP **401** Bad credentials if invalid username/password provided
+    - HTTP **400** Bad Request if update user request is invalid
+
+(4) **Get User**
+- Path: ``/v1/user/getUser``
+- HTTP Method GET
+- Parameters: None
+- Auth: Basic auth (username/password)
+- Expected response:
+    - HTTP **200** OK indicating the user exists and details fetched successfully
+      ```
+      {
+         "id": "...",
+         "first_name": "...",
+         "last_name": "...",
+         "username": "...",
+         "account_created": "...",
+         "account_updated": "..."
+      }
+      ```
+    - HTTP **401** Bad credentials if invalid username/password provided
+
+Database
+----------------------
+- **DB**: MySQL
+- **Schema**:
+```
+Users Database
++-----------------+-------------+------+-----+---------+-------+
+| Field           | Type        | Null | Key | Default | Extra |
++-----------------+-------------+------+-----+---------+-------+
+| id              | varchar(100) | NO   |     | NULL    |       |
+| user_name       | varchar(100) | NO   | PRI | NULL    |       |
+| first_name      | varchar(100) | NO   |     | NULL    |       |
+| last_name       | varchar(100) | NO   |     | NULL    |       |
+| password        | varchar(100) | NO   |     | NULL    |       |
+| account_created | varchar(100) | NO   |     | NULL    |       |
+| account_updated | varchar(100) | NO   |     | NULL    |       |
++-----------------+-------------+------+-----+---------+-------+
+```
+- Password is stored using Bcrypt Hash + Salt
+
+Web service configuration
+----------------------
+- Port Number: 8080
+- HTTP protocol
+
+Build and running webapp
+----------------------
+(1) Clone the repository using following command
+
+```
+mkdir ~/shruti-csye6225
+cd ~/shruti-csye6225
+git clone git@github.com:CSYE6225-Shruti/webapp.git
+cd webapp
+```
+
+(2) Start the web app on local host.
+The port number is 8080.
+Run below command in the terminal
+```
+curl -v http://localhost:8080/healthz
+```
+(3) Testing the service APIs manually (using Postman): In postman, send 
+- ``GET`` request to ``http://localhost:8080/v1/user/getUser`` and verify the response
+- ``POST`` request to ``http://localhost:8080/v1/user/addUser`` and verify the response
+- ``PUT`` request to ``http://localhost:8080/v1/user/updateUser`` and verify the response
