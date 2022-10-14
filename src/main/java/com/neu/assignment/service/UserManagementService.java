@@ -50,7 +50,7 @@ public class UserManagementService implements UserDetailsService {
     }
 
     public boolean userAlreadyExists(String userName) throws WebappExceptions {
-        User alreadyExistingUser = getUser(userName);
+        User alreadyExistingUser = getUserByUsername(userName);
         if (alreadyExistingUser == null) {
             return false; // user does not exists in DB
         }
@@ -58,25 +58,31 @@ public class UserManagementService implements UserDetailsService {
         return true; // user exists in DB
     }
 
-    public User getUser(String userName) throws WebappExceptions {
-        User alreadyExistingUser = userDatabaseRepo.getUser(userName);
+    public User getUser(String userName, String id) throws WebappExceptions {
+        User alreadyExistingUser = userDatabaseRepo.getUser(userName,id);
         logger.info(String.valueOf(alreadyExistingUser));
         return alreadyExistingUser;
     }
 
-    public User updateUser(UpdateUserRequest updateUserRequest) throws WebappExceptions {
+    public User getUserByUsername(String userName) throws WebappExceptions {
+        User alreadyExistingUser = userDatabaseRepo.getUserByUsername(userName);
+        logger.info(String.valueOf(alreadyExistingUser));
+        return alreadyExistingUser;
+    }
+
+    public User updateUser(UpdateUserRequest updateUserRequest, String id) throws WebappExceptions {
         updateUserRequest.setPassword(generatePassword.encode(updateUserRequest.getPassword()));
         userDatabaseRepo.updateUser(updateUserRequest.getFirst_name(),
                 updateUserRequest.getLast_name(),
                 updateUserRequest.getPassword(),
-                updateUserRequest.getUsername());
+                updateUserRequest.getUsername(),id);
         logger.info("Updated User Details - ");
-        return userDatabaseRepo.getUser(updateUserRequest.getUsername());
+        return userDatabaseRepo.getUser(updateUserRequest.getUsername(), id);
     }
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User user = getUser(username);
+        User user = getUserByUsername(username);
         if (user == null) {
             throw new UsernameNotFoundException("Username " + username + " does not exists");
         }
@@ -85,4 +91,5 @@ public class UserManagementService implements UserDetailsService {
         logger.info("User Details - " + user.getUsername() + "  password = " + user.getPassword());
         return new UserCredentials(user);
     }
+
 }
