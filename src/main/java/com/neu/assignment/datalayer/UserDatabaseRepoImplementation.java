@@ -35,9 +35,10 @@ public class UserDatabaseRepoImplementation extends JdbcDaoSupport implements Us
     String insertUserQuery = "insert into users_db (" +
             " id, user_name, first_name, last_name, password, account_created, account_updated) " +
             " values (?,?,?,?,?,?,?)";
-    final String selectUserQuery = "select * from users_db where user_name = ? ";
+    final String selectUserQuery = "select * from users_db where user_name = ? AND id = ?";
+    final String selectUserQueryByUsername = "select * from users_db where user_name = ?";
     final String updateUserQuery = "update users_db set " +
-            "first_name = ?, last_name = ?, password = ?, account_updated = ? where user_name = ?";
+            "first_name = ?, last_name = ?, password = ?, account_updated = ? where user_name = ? AND id = ?";
 
     @PostConstruct
     private void initialize(){
@@ -58,11 +59,33 @@ public class UserDatabaseRepoImplementation extends JdbcDaoSupport implements Us
 
     //Get user data
     @Override
-    public User getUser(String user_name) throws WebappExceptions {
+    public User getUser(String user_name, String id) throws WebappExceptions {
         User user = null;
 
         try {
             user = (User) getJdbcTemplate().queryForObject(selectUserQuery,
+                    new Object[]{user_name, id},
+                    new BeanPropertyRowMapper(User.class));
+        } catch (EmptyResultDataAccessException e) {
+            logger.debug("User with username " + user_name + " was not found");
+        } catch (Exception e) {
+            throw new WebappExceptions(
+                    "Unexpected exception occurred while fetching user with username " + user_name, e);
+        }
+
+        if (user != null) {
+            user.setUsername(user_name);
+        }
+
+        return user;
+    }
+
+    @Override
+    public User getUserByUsername(String user_name) throws WebappExceptions {
+        User user = null;
+
+        try {
+            user = (User) getJdbcTemplate().queryForObject(selectUserQueryByUsername,
                     new Object[]{user_name},
                     new BeanPropertyRowMapper(User.class));
         } catch (EmptyResultDataAccessException e) {
@@ -120,12 +143,12 @@ public class UserDatabaseRepoImplementation extends JdbcDaoSupport implements Us
 
     //update user
     @Override
-    public void updateUser(String first_name, String last_name, String password, String user_name) {
+    public void updateUser(String first_name, String last_name, String password, String user_name, String id) {
         Instant currentTime = Instant.now();
         int rowsUpdated = 0;
         try {
             rowsUpdated = getJdbcTemplate().update(updateUserQuery,
-                    first_name, last_name, password, currentTime.toString(), user_name);
+                    first_name, last_name, password, currentTime.toString(), user_name, id);
         } catch (Exception e) {
             throw new WebappExceptions(
                     "Unexpected exception while updating user with username " + user_name, e);

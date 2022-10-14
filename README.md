@@ -8,6 +8,7 @@ This repository contains source for a webservice built using Java/Spring-boot ba
 | Webapp               | Java, Maven, Spring Boot             |
 | Github               | Github Actions
 | Database             | MySQL
+
 APIs
 ----------------------
 (1) **Healthz API**
@@ -16,7 +17,7 @@ APIs
 - Expected response: HTTP 200 OK
 
 (2) **Create User API**
-- Path: ``/v1/account/addUser``
+- Path: ``/v1/account/``
 - HTTP Method POST
 - Parameters:
 ```
@@ -44,7 +45,7 @@ APIs
     - HTTP **400** Bad Request if user already exists
       
 (3) **Put User API**
-- Path: ``/v1/account/updateUser``
+- Path: ``/v1/account/{userID}``
 - HTTP Method PUT
 - Parameters:
 ```
@@ -61,7 +62,7 @@ APIs
     - HTTP **400** Bad Request if update user request is invalid
 
 (4) **Get User**
-- Path: ``/v1/account/getUser``
+- Path: ``/v1/account/{userID}``
 - HTTP Method GET
 - Parameters: None
 - Auth: Basic auth (username/password)

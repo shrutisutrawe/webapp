@@ -53,7 +53,7 @@ public class UserManagementController {
     }
 
     //Create user request
-    @PostMapping(path= "/addUser", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path= "", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> createUser(@RequestBody String createUserRequestPayload) {
         logger.info("Called Create User API");
         logger.info(createUserRequestPayload);
@@ -98,8 +98,8 @@ public class UserManagementController {
     }
 
     //Get User Data Request
-    @GetMapping(path= "/getUser", produces = "application/json")
-    public ResponseEntity<Object> getUser(@RequestHeader HttpHeaders headers) {
+    @GetMapping(path= "/{userID}", produces = "application/json")
+    public ResponseEntity<Object> getUser(@PathVariable(value="userID") String id, @RequestHeader HttpHeaders headers) {
 
         String userName = getUserNameFromAuthHeader(headers);
         if (userName == null) {
@@ -111,7 +111,7 @@ public class UserManagementController {
 
         User user = null;
         try { //user input validations
-            user = userService.getUser(userName);
+            user = userService.getUser(userName, id);
             if (user == null) {
                 return new ResponseEntity<Object>(
                         new ErrorMessages("Invalid username or password. No such user found"),
@@ -127,8 +127,8 @@ public class UserManagementController {
     }
 
     //Update User Data Request
-    @PutMapping(path= "/updateUser", consumes = "application/json", produces = "application/json")
-    public ResponseEntity<Object> updateUser(@RequestBody String updateUserRequestPayload,
+    @PutMapping(path= "{userID}", consumes = "application/json", produces = "application/json")
+    public ResponseEntity<Object> updateUser(@PathVariable(value="userID") String id, @RequestBody String updateUserRequestPayload,
                                              @RequestHeader HttpHeaders headers) {
 
         String userName = getUserNameFromAuthHeader(headers);
@@ -161,7 +161,7 @@ public class UserManagementController {
                         new ErrorMessages("User " + updateUserRequest.getUsername() + " does not exists"),
                         HttpStatus.BAD_REQUEST);
             }
-            updatedUser = userService.updateUser(updateUserRequest);
+            updatedUser = userService.updateUser(updateUserRequest, id);
             logger.debug("User created successfully. User ID = " + updatedUser.getId());
         } catch (WebappExceptions e) {
             logger.error("Some unexpected exception occurred.", e);
@@ -174,6 +174,8 @@ public class UserManagementController {
 
 
     private String getUserNameFromAuthHeader(HttpHeaders headers) {
+        System.out.println("eaders");
+        System.out.println(headers);
         List<String> authorizationHeaders = headers.get((Object)"Authorization");
         if (authorizationHeaders.isEmpty()) {
             return null;
