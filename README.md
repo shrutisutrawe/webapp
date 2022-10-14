@@ -1,13 +1,15 @@
 ##Summary
 
+assinment 2
 This repository contains source for a webservice built using Java/Spring-boot based on REST architecture
 
 ##Tools and Technologies
 | Infra                | Tools/Technologies                   |
 |----------------------|--------------------------------------|
 | Webapp               | Java, Maven, Spring Boot             |
-| Github               | Github Actions
-| Database             | MySQL
+| Github               | Github Actions                       |
+| Database             | MySQL                                |
+
 APIs
 ----------------------
 (1) **Healthz API**
