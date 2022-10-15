@@ -26,6 +26,10 @@ hs_err_pid*
 HELP.md
 mvnw
 mvnw.cmd
-webservice.iml
+demo1.iml
 
 target/**
+
+.DS_Store
+
+*.iws
