@@ -6,7 +6,7 @@ name: Java with Maven
 
 on:
   push:
-    branches: [ main ]
+    branches: [ assignmemt4 ]
   pull_request:
     branches: [ main ]
 
