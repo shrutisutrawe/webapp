@@ -10,7 +10,7 @@ variable "source_ami" {
 
 variable "ssh_username" {
   type    = string
-  default = "ubuntu"
+  default = "ec2-user"
 }
 
 variable "subnet_id" {
@@ -71,6 +71,8 @@ source "amazon-ebs" "my-ami" {
   temporary_key_pair_type = "ed25519"
   access_key = "${var.aws_access_key}"
   secret_key = "${var.aws_secret_key}"
+  ssh_keypair_name = "aws-us-west-2"
+  ssh_private_key_file = "aws-us-west-2.pem"
 
   launch_block_device_mappings {
     delete_on_termination = true
