@@ -94,17 +94,14 @@ build {
       "pwd",
       "echo ************",
 #      "cd /home/runner",
-      "cd ../",
+      "cd /usr",
       "pwd",
       "echo 00000000000000000",
       "ls",
       "echo 00000000000000000",
       "echo \"going to\"",
       "pwd",
-      "echo -----------",
-#      "cd work",
-      "echo 00000000000000000",
-      "pwd"
+      "echo -----------"
     ]
 #    scripts = [
 #      "scripts.sh"
