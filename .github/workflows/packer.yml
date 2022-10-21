@@ -25,7 +25,10 @@ jobs:
       - name: Package with Maven
         run: mvn -B package --file pom.xml
       - name: Generate artifacts with maven
-        run: mvn clean package
+        run: |
+           mvn clean package
+           pwd
+           ls
 
   packer_validate:
     runs-on: ubuntu-latest

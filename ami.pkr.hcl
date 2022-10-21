@@ -93,14 +93,16 @@ build {
       "echo ************",
       "pwd",
       "echo ************",
-      "[-d \"/home/runner/\" ] && echo \"Directory /home/runner/ exists."
+      "cd /home/runner",
+      "echo \"going to\"",
+      "pwd"
     ]
 #    scripts = [
 #      "scripts.sh"
 #    ]
   }
-#  provisioner "file" {
-#    sources  = ["/home/runner/work/webapp/webapp/target/demo1-0.0.1-SNAPSHOT.war"]
-#    destination = "~/demo1-0.0.1-SNAPSHOT.war"
-#  }
+  provisioner "file" {
+    sources  = ["demo1-0.0.1-SNAPSHOT.war"]
+    destination = "~/demo1-0.0.1-SNAPSHOT.war"
+  }
 }
