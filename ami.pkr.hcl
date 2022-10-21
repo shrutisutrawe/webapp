@@ -108,7 +108,7 @@ build {
     ]
   }
   provisioner "file" {
-    source  = "/usr/share/demo1-0.0.1-SNAPSHOT.war"
+    source  = "usr/share/demo1-0.0.1-SNAPSHOT.war"
     destination = "~/demo1-0.0.1-SNAPSHOT.war"
   }
 }
