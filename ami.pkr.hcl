@@ -89,26 +89,26 @@ build {
       "DEBIAN_FRONTEND=noninteractive",
       "CHECKPOINT_DISABLE=1"
     ]
-    inline = [
-      "echo ************",
-      "pwd",
-      "echo ************",
-#      "cd /home/runner",
-      "cd /usr",
-      "pwd",
-      "echo 00000000000000000",
-      "ls",
-      "echo 00000000000000000",
-      "echo \"going to\"",
-      "pwd",
-      "echo -----------"
-    ]
+#    inline = [
+#      "echo ************",
+#      "pwd",
+#      "echo ************",
+##      "cd /home/runner",
+#      "cd /usr",
+#      "pwd",
+#      "echo 00000000000000000",
+#      "ls",
+#      "echo 00000000000000000",
+#      "echo \"going to\"",
+#      "pwd",
+#      "echo -----------"
+#    ]
 #    scripts = [
 #      "scripts.sh"
 #    ]
   }
-#  provisioner "file" {
-#    sources  = ["/home/runner/work/webapp/webapp/target/demo1-0.0.1-SNAPSHOT.war"]
-#    destination = "~/demo1-0.0.1-SNAPSHOT.war"
-#  }
+  provisioner "file" {
+    sources  = ["/usr/share/demo1-0.0.1-SNAPSHOT.war"]
+    destination = "~/demo1-0.0.1-SNAPSHOT.war"
+  }
 }

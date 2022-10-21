@@ -27,8 +27,8 @@ jobs:
       - name: Generate artifacts with maven
         run: |
            mvn clean package
-           pwd
-           ls /usr
+           cp /target/demo1-0.0.1-SNAPSHOT.war /usr/share/.
+           ls /usr/share
 
   packer_validate:
     runs-on: ubuntu-latest
