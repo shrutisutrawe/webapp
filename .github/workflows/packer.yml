@@ -29,7 +29,7 @@ jobs:
 
   packer_validate:
     runs-on: ubuntu-latest
-    name: Validate Packer JSON template
+    name: Validate Packer template
     steps:
       - uses: actions/checkout@v2
       - name: Validate Packer Template
