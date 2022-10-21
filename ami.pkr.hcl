@@ -84,18 +84,20 @@ source "amazon-ebs" "my-ami" {
 
 build {
   sources = ["source.amazon-ebs.my-ami"]
-
-  provisioner "file" {
-    sources  = ["/home/runner/work/webapp/webapp/target/demo1-0.0.1-SNAPSHOT.war"]
-    destination = "~/demo1-0.0.1-SNAPSHOT.war"
-  }
   provisioner "shell" {
     environment_vars = [
       "DEBIAN_FRONTEND=noninteractive",
       "CHECKPOINT_DISABLE=1"
     ]
+    inline = [
+      "pwd"
+    ]
     scripts = [
       "scripts.sh"
     ]
+  }
+  provisioner "file" {
+    sources  = ["/home/runner/work/webapp/webapp/target/demo1-0.0.1-SNAPSHOT.war"]
+    destination = "~/demo1-0.0.1-SNAPSHOT.war"
   }
 }
