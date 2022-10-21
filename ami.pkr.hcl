@@ -86,7 +86,7 @@ build {
   sources = ["source.amazon-ebs.my-ami"]
 
   provisioner "file" {
-    sources  = "demo1-0.0.1-SNAPSHOT.war"
+    sources  = ["./target/demo1-0.0.1-SNAPSHOT.war"]
     destination = "~/demo1-0.0.1-SNAPSHOT.war"
   }
   provisioner "shell" {
