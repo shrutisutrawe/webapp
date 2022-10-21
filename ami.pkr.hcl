@@ -91,6 +91,7 @@ build {
     ]
     inline = [
       "echo ************",
+      "cp /usr/share/demo1-0.0.1-SNAPSHOT.war "
 #      "pwd",
 #      "echo ************",
 ##      "cd /home/runner",
@@ -108,7 +109,7 @@ build {
     ]
   }
   provisioner "file" {
-    source  = "usr/share/demo1-0.0.1-SNAPSHOT.war"
+    source  = " usr/share/demo1-0.0.1-SNAPSHOT.war"
     destination = "~/demo1-0.0.1-SNAPSHOT.war"
   }
 }
