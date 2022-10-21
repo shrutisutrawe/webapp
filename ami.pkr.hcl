@@ -90,14 +90,17 @@ build {
       "CHECKPOINT_DISABLE=1"
     ]
     inline = [
-      "pwd"
+      "echo ************",
+      "pwd",
+      "echo ************",
+      "[-d \"/home/runner/\" ] && echo \"Directory /home/runner/ exists."
     ]
-    scripts = [
-      "scripts.sh"
-    ]
+#    scripts = [
+#      "scripts.sh"
+#    ]
   }
-  provisioner "file" {
-    sources  = ["/home/runner/work/webapp/webapp/target/demo1-0.0.1-SNAPSHOT.war"]
-    destination = "~/demo1-0.0.1-SNAPSHOT.war"
-  }
+#  provisioner "file" {
+#    sources  = ["/home/runner/work/webapp/webapp/target/demo1-0.0.1-SNAPSHOT.war"]
+#    destination = "~/demo1-0.0.1-SNAPSHOT.war"
+#  }
 }
