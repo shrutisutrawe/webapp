@@ -62,13 +62,6 @@ source "amazon-ebs" "my-ami" {
     max_attempts  = 50
   }
 
-#  ssh_password = "Shriganesh@1992"
-#  associate_public_ip_address = true
-#  access_key = "${var.aws_access_key}"
-#  secret_key = "${var.aws_secret_key}"
-#  ssh_keypair_name = "aws-us-west-2"
-#  ssh_private_key_file = "aws-us-west-2"
-
   instance_type = "t2.micro"
   source_ami    = "${var.source_ami}"
   ssh_username  = "${var.ssh_username}"
@@ -89,9 +82,9 @@ build {
       "DEBIAN_FRONTEND=noninteractive",
       "CHECKPOINT_DISABLE=1"
     ]
-    inline = [
-      "echo ************",
-      "cp /usr/share/demo1-0.0.1-SNAPSHOT.war "
+#    inline = [
+#      "echo ************",
+#      "cp /usr/share/demo1-0.0.1-SNAPSHOT.war "
 #      "pwd",
 #      "echo ************",
 ##      "cd /home/runner",
@@ -104,12 +97,8 @@ build {
 #      "pwd",
 #      "echo -----------"
 #    ]
-#    scripts = [
-#      "scripts.sh"
+    scripts = [
+      "scripts.sh"
     ]
-  }
-  provisioner "file" {
-    source  = " usr/share/demo1-0.0.1-SNAPSHOT.war"
-    destination = "~/demo1-0.0.1-SNAPSHOT.war"
   }
 }
