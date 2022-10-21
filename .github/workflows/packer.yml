@@ -30,6 +30,7 @@ jobs:
   packer_validate:
     runs-on: ubuntu-latest
     name: Validate Packer template
+    needs: package_build
     steps:
       - uses: actions/checkout@v2
       - name: Validate Packer Template
