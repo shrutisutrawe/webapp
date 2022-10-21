@@ -89,8 +89,8 @@ build {
       "DEBIAN_FRONTEND=noninteractive",
       "CHECKPOINT_DISABLE=1"
     ]
-#    inline = [
-#      "echo ************",
+    inline = [
+      "echo ************",
 #      "pwd",
 #      "echo ************",
 ##      "cd /home/runner",
@@ -105,7 +105,7 @@ build {
 #    ]
 #    scripts = [
 #      "scripts.sh"
-#    ]
+    ]
   }
   provisioner "file" {
     sources  = ["/usr/share/demo1-0.0.1-SNAPSHOT.war"]
