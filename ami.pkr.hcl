@@ -95,14 +95,18 @@ build {
       "echo ************",
       "cd /home/runner",
       "echo \"going to\"",
+      "pwd",
+      "echo -----------",
+      "cd work",
+      "echo 00000000000000000",
       "pwd"
     ]
 #    scripts = [
 #      "scripts.sh"
 #    ]
   }
-  provisioner "file" {
-    sources  = ["demo1-0.0.1-SNAPSHOT.war"]
-    destination = "~/demo1-0.0.1-SNAPSHOT.war"
-  }
+#  provisioner "file" {
+#    sources  = ["/home/runner/work/webapp/webapp/target/demo1-0.0.1-SNAPSHOT.war"]
+#    destination = "~/demo1-0.0.1-SNAPSHOT.war"
+#  }
 }

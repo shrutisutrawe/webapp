@@ -29,6 +29,8 @@ jobs:
            mvn clean package
            pwd
            ls
+          cd target
+          ls
 
   packer_validate:
     runs-on: ubuntu-latest
