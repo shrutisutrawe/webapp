@@ -29,4 +29,6 @@ jobs:
         run: mvn test
       - name: Package with Maven
         run: mvn -B package --file pom.xml
+      - name: Generate artifacts with maven
+        run: mvn clean package
 

@@ -27,12 +27,6 @@ jobs:
     needs: packer_validate
     runs-on: ubuntu-latest
     steps:
-#      - name: Download artifacts
-#        uses: actions/download-artifact@v3
-#        with:
-#          name: WebServiceWarFile
-#          path: /home/runner/work/webservice/webservice/ami/WebServiceWarFile.zip
-
       - uses: actions/checkout@v2
 
       - name: Packer build
