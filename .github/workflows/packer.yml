@@ -8,25 +8,6 @@ on:
   pull_request:
     branches: [ main ]
 jobs:
-#  build:
-#    runs-on: ubuntu-latest
-#      steps:
-#      - uses: actions/checkout@v2
-#      - name: Set up JDK 8 for x64
-#        uses: actions/setup-java@v2
-#        with:
-#          java-version: '8'
-#          distribution: 'temurin'
-#          cache: maven
-#      - name: Build with Maven
-#        run: mvn compile
-#      - name: Test with Maven
-#        run: mvn test
-#      - name: Package with Maven
-#        run: mvn -B package --file pom.xml
-#      - name: Compress code deploy artifacts
-#        run: cd /home/runner/work/webservice/webservice && tar -czvf code_deploy.tar.gz code_deploy
-
   packer_validate:
     runs-on: ubuntu-latest
     name: Validate Packer template
@@ -55,11 +36,12 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Packer build
-        uses: ExitoLab/packer_build_action_aws@v0.2.10
+        uses: hashicorp/packer-github-actions@master
         with:
           templateFile: 'ami.pkr.hcl'
           command: build
         env:
+          PACKER_LOG: 1
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
           AWS_DEFAULT_REGION: us-west-2

@@ -33,6 +33,15 @@ variable "aws_devuser" {
   default = "958817607905"
 }
 
+#variable "aws_access_key" {
+#  type    = string
+#  default = "AKIA56PP3UDQ22ABRY7X"
+#}
+#
+#variable "aws_secret_key" {
+#  type    = string
+#  default = "fL5SZ/MszXYPAperBom7xqeeAe/11pNVKEIE6RHo"
+#}
 
 # https://www.packer.io/plugins/builders/amazon/ebs
 source "amazon-ebs" "my-ami" {
@@ -53,6 +62,12 @@ source "amazon-ebs" "my-ami" {
     max_attempts  = 50
   }
 
+#  ssh_password = "Shriganesh@1992"
+#  associate_public_ip_address = true
+#  access_key = "${var.aws_access_key}"
+#  secret_key = "${var.aws_secret_key}"
+#  ssh_keypair_name = "aws-us-west-2"
+#  ssh_private_key_file = "aws-us-west-2"
 
   instance_type = "t2.micro"
   source_ami    = "${var.source_ami}"
