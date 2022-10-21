@@ -52,8 +52,7 @@ source "amazon-ebs" "my-ami" {
     delay_seconds = 120
     max_attempts  = 50
   }
-
-
+  
   instance_type = "t2.micro"
   source_ami    = "${var.source_ami}"
   ssh_username  = "${var.ssh_username}"
