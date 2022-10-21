@@ -93,11 +93,16 @@ build {
       "echo ************",
       "pwd",
       "echo ************",
-      "cd /home/runner",
+#      "cd /home/runner",
+      "cd ../",
+      "pwd",
+      "echo 00000000000000000",
+      "ls",
+      "echo 00000000000000000",
       "echo \"going to\"",
       "pwd",
       "echo -----------",
-      "cd work",
+#      "cd work",
       "echo 00000000000000000",
       "pwd"
     ]
