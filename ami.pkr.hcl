@@ -33,6 +33,16 @@ variable "aws_devuser" {
   default = "958817607905"
 }
 
+variable "aws_access_key" {
+  type    = string
+  default = "AKIA56PP3UDQ22ABRY7X"
+}
+
+variable "aws_secret_key" {
+  type    = string
+  default = "fL5SZ/MszXYPAperBom7xqeeAe/11pNVKEIE6RHo"
+}
+
 
 # https://www.packer.io/plugins/builders/amazon/ebs
 source "amazon-ebs" "my-ami" {
@@ -52,13 +62,15 @@ source "amazon-ebs" "my-ami" {
     delay_seconds = 120
     max_attempts  = 50
   }
-  
+
   instance_type = "t2.micro"
   source_ami    = "${var.source_ami}"
   ssh_username  = "${var.ssh_username}"
   subnet_id     = "${var.subnet_id}"
   associate_public_ip_address = true
   temporary_key_pair_type = "ed25519"
+  access_key = "${var.aws_access_key}"
+  secret_key = "${var.aws_secret_key}"
 
   launch_block_device_mappings {
     delete_on_termination = true
