@@ -40,5 +40,8 @@ sudo mysql -uroot -pRoot@123 -e "CREATE DATABASE IF NOT EXISTS Csye6225WebServic
 
 sudo apt install maven -y
 
+sudo mkdir -p /home/ubuntu/logs
+sudo touch /home/ubuntu/logs/logs.out
+sudo chown ubuntu:ubuntu /home/ubuntu/logs/logs.out
 sudo wget https://csye6225-shruti.s3.us-west-2.amazonaws.com/demo1-0.0.1-SNAPSHOT.jar
 sudo nohup java -jar demo1-0.0.1-SNAPSHOT.jar 1> /home/ubuntu/logs/logs.out 2>&1 </dev/null &
