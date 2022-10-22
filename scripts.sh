@@ -45,4 +45,4 @@ sudo apt install maven -y
 #sudo chown ubuntu:ubuntu /home/ubuntu/logs/logs.out
 sleep 30
 sudo wget https://csye6225-shruti.s3.us-west-2.amazonaws.com/demo1-0.0.1-SNAPSHOT.jar
-sudo nohup java -jar demo1-0.0.1-SNAPSHOT.jar
+sudo nohup java -jar demo1-0.0.1-SNAPSHOT.jar &
