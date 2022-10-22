@@ -57,4 +57,5 @@ sudo wget https://csye6225-shruti.s3.us-west-2.amazonaws.com/demo1-0.0.1-SNAPSHO
 sudo chmod 755 demo1-0.0.1-SNAPSHOT.jar
 sudo systemctl daemon-reload
 sudo systemctl start myapp.service
+sudo systemctl enable myapp.service
 sudo systemctl status myapp.service
