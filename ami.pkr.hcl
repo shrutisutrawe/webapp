@@ -33,16 +33,6 @@ variable "aws_devuser" {
   default = "958817607905"
 }
 
-#variable "aws_access_key" {
-#  type    = string
-#  default = "AKIA56PP3UDQ22ABRY7X"
-#}
-#
-#variable "aws_secret_key" {
-#  type    = string
-#  default = "fL5SZ/MszXYPAperBom7xqeeAe/11pNVKEIE6RHo"
-#}
-
 # https://www.packer.io/plugins/builders/amazon/ebs
 source "amazon-ebs" "my-ami" {
   region          = "${var.aws_region}"
@@ -77,26 +67,12 @@ source "amazon-ebs" "my-ami" {
 
 build {
   sources = ["source.amazon-ebs.my-ami"]
+
   provisioner "shell" {
     environment_vars = [
       "DEBIAN_FRONTEND=noninteractive",
       "CHECKPOINT_DISABLE=1"
     ]
-#    inline = [
-#      "echo ************",
-#      "cp /usr/share/demo1-0.0.1-SNAPSHOT.war "
-#      "pwd",
-#      "echo ************",
-##      "cd /home/runner",
-#      "cd /usr",
-#      "pwd",
-#      "echo 00000000000000000",
-#      "ls",
-#      "echo 00000000000000000",
-#      "echo \"going to\"",
-#      "pwd",
-#      "echo -----------"
-#    ]
     scripts = [
       "scripts.sh"
     ]

@@ -24,11 +24,6 @@ jobs:
         run: mvn test
       - name: Package with Maven
         run: mvn -B package --file pom.xml
-      - name: Generate artifacts with maven
-        run: |
-           mvn clean package
-           cp target/demo1-0.0.1-SNAPSHOT.war /usr/share/.
-           ls /usr/share
 
   packer_validate:
     runs-on: ubuntu-latest
