@@ -4,6 +4,7 @@ sudo apt-get update
 sudo apt-get upgrade -y
 sudo apt-get install nginx -y
 sudo apt-get clean
+
 sudo apt update
 sudo apt-get install openjdk-8-jdk -y
 sudo groupadd --system tomcat
@@ -23,23 +24,27 @@ sudo systemctl status tomcat.service
 ss -ltn
 sudo ufw allow from any to any port 8080 proto tcp
 
-sudo apt-cache search mysql-server
-sudo apt info -a mysql-server-8.0
-sudo apt-get install mysql-server-8.0 -y
-sudo systemctl is-enabled mysql.service
-sudo systemctl start mysql.service
-sudo systemctl status mysql.service
-export pwd=abc
-echo $pwd
-#export altercmd=\Alter user 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Root@123'\
-#echo $altercmd
-sudo mysql -uroot -p$pwd --connect-expired-password -e "Alter user 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Root@123'"
-sudo systemctl restart mysql.service
-sudo systemctl status mysql.service
-sudo mysql -uroot -pRoot@123 -e "CREATE DATABASE IF NOT EXISTS Csye6225WebServiceDB"
+#sudo apt-cache search mysql-server
+#sudo apt info -a mysql-server-8.0
+#sudo apt-get install mysql-server-8.0 -y
+#sudo systemctl is-enabled mysql.service
+#sudo systemctl start mysql.service
+#sudo systemctl status mysql.service
+#export pwd=abc
+#echo $pwd
+##export altercmd=\Alter user 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Root@123'\
+##echo $altercmd
+#sudo mysql -uroot -p$pwd --connect-expired-password -e "Alter user 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Root@123'"
+#sudo systemctl restart mysql.service
+#sudo systemctl status mysql.service
+#sudo mysql -uroot -pRoot@123 -e "CREATE DATABASE IF NOT EXISTS Csye6225WebServiceDB"
 
-sudo apt install maven -y
+#sudo apt install maven -y
 
+# shellcheck disable=SC2232
+sudo cd
+sudo pwd
+sudo ls -lrt
 sudo mkdir -p /opt/webapps
 sudo chmod 755 /opt/webapps
 
@@ -50,10 +55,21 @@ sudo useradd -d /opt/webapps -r -s /bin/false -g appmgr2 jvmapps2
 echo -e '\n[Unit]\nDescription=Manage JAVA service\n\n[Service]\nWorkingDirectory=/opt/webapps\nExecStart=/bin/java -jar /opt/webapps/demo1-0.0.1-SNAPSHOT.jar\nType=simple\nUser=jvmapps2\nGroup=appmgr2\nRestart=on-failure\nRestartSec=10\n\n[Install]\nWantedBy=multi-user.target\n' | sudo tee /etc/systemd/system/myapp.service
 sudo chown -R jvmapps2:appmgr2 /opt/webapps
 
+sudo pwd
+sudo ls -lrt
+
+#sudo mvn clean install
+# shellcheck disable=SC2164
+
+sudo pwd
+sudo cp /home/ubuntu/demo1-0.0.1-SNAPSHOT.jar /opt/webapps/.
+
 # shellcheck disable=SC2164
 cd /opt/webapps
+sudo pwd
+ls -lrt
 
-sudo wget https://csye6225-shruti.s3.us-west-2.amazonaws.com/demo1-0.0.1-SNAPSHOT.jar
+#sudo wget https://csye6225-shruti.s3.us-west-2.amazonaws.com/demo1-0.0.1-SNAPSHOT.jar
 sudo chmod 755 demo1-0.0.1-SNAPSHOT.jar
 sudo systemctl daemon-reload
 sudo systemctl start myapp.service
