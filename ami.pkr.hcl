@@ -68,6 +68,11 @@ source "amazon-ebs" "my-ami" {
 build {
   sources = ["source.amazon-ebs.my-ami"]
 
+  provisioner "file" {
+    source = "staging/demo1-0.0.1-SNAPSHOT.jar"
+    destination = "/home/ubuntu/"
+  }
+
   provisioner "shell" {
     environment_vars = [
       "DEBIAN_FRONTEND=noninteractive",
@@ -77,4 +82,5 @@ build {
       "scripts.sh"
     ]
   }
+
 }

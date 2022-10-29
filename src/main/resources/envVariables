@@ -1,0 +1,6 @@
+AWS_RDS_DB_ENDPOINT=vpc-dev-1-rdsinstance-x7btgampffew.cnwe2utv9r9d.us-west-2.rds.amazonaws.com
+AWS_RDS_DB_NAME=csye6225
+AWS_RDS_DB_MASTER_USERNAME=csye6225
+AWS_RDS_DB_MASTER_PASSWORD=csye6225pwd
+AWS_RDS_DB_PORT=3306
+AWS_S3_BUCKET_NAME=csye6225bucketshrutitobedeleted

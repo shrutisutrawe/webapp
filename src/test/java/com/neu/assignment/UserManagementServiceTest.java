@@ -1,42 +1,48 @@
 package com.neu.assignment;
 
-import com.neu.assignment.datalayer.UserDatabaseRepo;
+import com.neu.assignment.datalayer.FileHandlingRepo;
+import com.neu.assignment.datalayer.UploadToS3Builder;
 import com.neu.assignment.model.User;
 import com.neu.assignment.service.GeneratePassword;
 import com.neu.assignment.service.UserManagementService;
 
 import org.junit.Assert;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static com.neu.assignment.Constants.getMockUserCreateRequest;
 import static com.neu.assignment.Constants.mockedUser;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 
-@RunWith(SpringRunner.class)
 public class UserManagementServiceTest {
     @InjectMocks
     UserManagementService userManagementService;
+
     @Mock
-    UserDatabaseRepo userDatabaseRepo;
+    FileHandlingRepo fileHandlingRepo;
+
     @Mock
     GeneratePassword generatePassword;
+
+    @Mock
+    UploadToS3Builder mockUploadToS3Builder;
+
+    @Mock
+    FileHandlingRepo mockFileHandlingRepo;
 
 
     @Test
     public void createUserTest() {
-        userDatabaseRepo = mock(UserDatabaseRepo.class);
+        fileHandlingRepo = mock(FileHandlingRepo.class);
         generatePassword = mock(GeneratePassword.class);
-        userManagementService = new UserManagementService(userDatabaseRepo, generatePassword);
+        userManagementService = new UserManagementService(fileHandlingRepo, generatePassword);
 
-        Mockito.when(userDatabaseRepo.createUser(any(), any(), any(), any())).thenReturn(mockedUser());
+        Mockito.when(fileHandlingRepo.createUser(any(), any(), any(), any())).thenReturn(mockedUser());
         Mockito.when(generatePassword.encode(any())).thenReturn("expected_password");
         User user = userManagementService.createUser(getMockUserCreateRequest());
 
