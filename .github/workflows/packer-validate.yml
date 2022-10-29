@@ -48,18 +48,3 @@ jobs:
         env:
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
-
-      - name: Download jar file
-        uses: actions/download-artifact@v2
-        with:
-          name: webapp-artifact
-      - name: Packer build
-        uses: hashicorp/packer-github-actions@master
-        with:
-          templateFile: 'ami.pkr.hcl'
-          command: build
-        env:
-          PACKER_LOG: 1
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
-          AWS_DEFAULT_REGION: us-west-2
