@@ -160,6 +160,7 @@ git clone git@github.com:CSYE6225-Shruti/webapp.git
 cd webapp
 ```
 
+
 (2) Start the web app on local host.
 The port number is 8080.
 Run below command in the terminal
