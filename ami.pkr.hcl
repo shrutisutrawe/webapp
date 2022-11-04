@@ -15,12 +15,12 @@ variable "ssh_username" {
 
 variable "subnet_id" {
   type    = string
-  default = "subnet-0398a063e8e37840b"
+  default = "subnet-0efede05bd423a4a7"
 }
 
 variable "profile" {
   type    = string
-  default = "demouser"
+  default = "devuser"
 }
 
 variable "aws_demouser" {
