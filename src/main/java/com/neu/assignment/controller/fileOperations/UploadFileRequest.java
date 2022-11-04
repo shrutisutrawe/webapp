@@ -3,10 +3,19 @@ package com.neu.assignment.controller.fileOperations;
 import org.springframework.web.multipart.MultipartFile;
 
 public class UploadFileRequest {
+    private String docId;
     private String userName;
     private MultipartFile multipartFile;
     private String fileName;
     private String date_created;
+
+    public String getDocId() {
+        return docId;
+    }
+
+    public void setDocId(String docId) {
+        this.docId = docId;
+    }
 
     public String getFileName() {
         return fileName;

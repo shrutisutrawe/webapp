@@ -35,16 +35,11 @@ jobs:
           name: webapp-artifact
           path: staging
 
-      - name: testing
-        run: |
-          pwd
-          ls -al
-
       - name: Validate Packer Template
         uses: hashicorp/packer-github-actions@master
         with:
           command: validate
           target: ami.pkr.hcl
         env:
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_DEV }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEV }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID_DEMO }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY_DEMO }}

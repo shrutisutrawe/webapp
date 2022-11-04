@@ -112,17 +112,6 @@ public class FileHandlingRepoImplementation extends JdbcDaoSupport implements Fi
             throw new WebappExceptions("Unexpected Exception while deleting User", e);
         }
     }
-//
-//    @Override
-//    public void setUserVerified(String username) throws WebappExceptions {
-//        try (PreparedStatement preparedStatement = getDBConnection().prepareStatement(Queries.SET_USER_VERIFIED_QUERY)) {
-//            preparedStatement.setString(1, User.USER_ACCOUNT_VERIFIED_STATUS);
-//            preparedStatement.setString(2, username);
-//            preparedStatement.executeUpdate();
-//        } catch (SQLException e) {
-//            throw new WebappExceptions("Unexpected Exception setting user as verified", e);
-//        }
-//    }
 
     @Override
     public User getUser(String user_name, String id) throws WebappExceptions {
@@ -225,9 +214,9 @@ public class FileHandlingRepoImplementation extends JdbcDaoSupport implements Fi
     public FileDetails addFileDetails(User user, String s3FilePath, UploadFileRequest uploadFileRequest) throws WebappExceptions {
         // FileDetails FileDetails = alterFileDetails(user, s3FilePath, UploadFileRequest, Queries.ADD_TO_IMAGE_TABLE_QUERY);
 
-        String docId = UUID.randomUUID().toString();
+//        String docId = UUID.randomUUID().toString();
         FileDetails FileDetails = new FileDetails(
-                docId, user.getId(), uploadFileRequest.getFileName(),
+                uploadFileRequest.getDocId(), user.getId(), uploadFileRequest.getFileName(),
                 s3FilePath, uploadFileRequest.getDate_created());
         try (PreparedStatement preparedStatement = getDBConnection().prepareStatement(Queries.UPLOAD_FILE_TO_TABLE_QUERY)) {
             preparedStatement.setString(1, FileDetails.getDoc_id());
