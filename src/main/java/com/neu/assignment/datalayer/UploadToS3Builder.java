@@ -15,6 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @Repository
 public class UploadToS3Builder {
@@ -22,8 +23,8 @@ public class UploadToS3Builder {
     private static final Logger log = LoggerFactory.getLogger(UploadToS3Builder.class);
 
     private AmazonS3 s3Client;
-    private String access_key="AKIA56PP3UDQ22ABRY7X";
-    private String secret_key="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";
+    private String access_key="AKIARNH6YTWURGPQLB4G";
+    private String secret_key="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";
 
     public UploadToS3Builder() {
         BasicAWSCredentials awsCredentials = new BasicAWSCredentials(access_key, secret_key);
@@ -35,7 +36,6 @@ public class UploadToS3Builder {
     public String uploadFile(String bucketName, String userId, UploadFileRequest uploadFileRequest) {
         System.out.println("in upload to s3 bucket code");
         String s3Path = null;
-
         System.out.println("bucketname b4:");
         System.out.println(bucketName);
         try {
@@ -47,7 +47,7 @@ public class UploadToS3Builder {
                 log.error("Bucket does not exists " + bucketName);
                 throw new WebappExceptions("S3 bucket " + bucketName + " does not exists");
             }
-            s3Path = userId + "/" + uploadFileRequest.getFileName();
+            s3Path = userId + "/" + uploadFileRequest.getDocId() + "/" + uploadFileRequest.getFileName();
             ObjectMetadata metadata = new ObjectMetadata();
             metadata.setContentLength(uploadFileRequest.getMultipartFile().getSize());
             s3Client.putObject(bucketName,

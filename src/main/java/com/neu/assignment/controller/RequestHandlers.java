@@ -8,6 +8,7 @@ import com.neu.assignment.controller.updateUser.UpdateUserRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.Instant;
+import java.util.UUID;
 
 public class RequestHandlers {
     private ObjectMapper objectMapper;
@@ -50,7 +51,9 @@ public class RequestHandlers {
     public UploadFileRequest buildUploadFileRequest(String username, MultipartFile multipartFile) throws WebappExceptions {
         System.out.println("in upload file request");
         System.out.println(multipartFile);
+        String docId = UUID.randomUUID().toString();
         UploadFileRequest UploadFileRequest = new UploadFileRequest();
+        UploadFileRequest.setDocId(docId);
         UploadFileRequest.setMultipartFile(multipartFile);
         UploadFileRequest.setFileName(multipartFile.getOriginalFilename());
         UploadFileRequest.setDate_created(Instant.now().toString());
