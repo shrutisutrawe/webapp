@@ -6,6 +6,7 @@ import com.neu.assignment.controller.fileOperations.UploadFileResponse;
 import com.neu.assignment.controller.updateUser.UpdateUserRequest;
 import com.neu.assignment.controller.createUser.CreateUserResponse;
 import com.neu.assignment.controller.getUser.GetUserResponse;
+import com.neu.assignment.metrics.WebappApplicationMetrics;
 import com.neu.assignment.model.FileDetails;
 import com.neu.assignment.model.User;
 import com.neu.assignment.exceptions.WebappExceptions;
@@ -33,6 +34,25 @@ public class UserManagementController {
     private final RequestHandlers requestHandlers;
     Logger logger = LoggerFactory.getLogger(UserManagementController.class);
 
+    @Autowired
+    WebappApplicationMetrics webAppApplicationMetrics;
+
+    private static final String CREATE_NEW_USER_METRIC = "CreateUser";
+    private static final String EXISTING_USER_METRIC = "ExistingUser";
+    private static final String CREATE_USER_ERROR_METRIC = "CreateUserError";
+    private static final String GET_USER_METRIC = "GetUser";
+    private static final String GET_USER_ERROR_METRIC = "GetUserError";
+    private static final String UPDATE_USER_METRIC = "UpdateUser";
+    private static final String UPDATE_USER_ERROR_METRIC = "UpdateUserError";
+    private static final String UPLOAD_DOCUMENT_METRIC = "UploadDocument";
+    private static final String UPLOAD_FILE_ERROR_METRIC = "UploadFileError";
+    private static final String GET_DOCUMENT_METRIC = "GetDocument";
+    private static final String GET_FILE_ERROR_METRIC = "GetFileError";
+    private static final String GET_DOCUMENT_WITH_DOCUMENT_ID_METRIC = "GetDocumentWithDocumentID";
+    private static final String GET_FILE_WITH_FILE_ID_ERROR_METRIC = "GetFileWithFileIdError";
+    private static final String DELETE_DOCUMENT_METRIC = "DeleteDocument";
+    private static final String DELETE_FILE_ERROR_METRIC = "DeleteFileError";
+
     @PostConstruct
     private void initialize() {
         try {
@@ -42,7 +62,6 @@ public class UserManagementController {
             logger.error("Unexpected exception while initializing user controller. ", e);
             throw new RuntimeException(e);
         }
-
     }
 
     @Bean(name = "multipartResolver")
@@ -69,14 +88,15 @@ public class UserManagementController {
     //Create user request
     @PostMapping(path= "/account", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> createUser(@RequestBody String createUserRequestPayload) {
-        logger.info("Called Create User API");
+        logger.info("UserManagementController: Called Create User API");
         logger.info(createUserRequestPayload);
+        webAppApplicationMetrics.addCount(CREATE_NEW_USER_METRIC);
         // validate input user and send bad request
         CreateUserRequest createUserRequest = null;
         try {
             createUserRequest = requestHandlers.buildCreateUserRequest(createUserRequestPayload);
         } catch (WebappExceptions e) {
-            logger.error("Exception while parsing create user request.", e);
+            logger.error("UserManagementController: Exception while parsing create user request.", e);
             return new ResponseEntity<Object>(
                     new ErrorMessages("Invalid create user request. It should have username, firstname, lastname and password"),
                     HttpStatus.BAD_REQUEST);
@@ -91,6 +111,8 @@ public class UserManagementController {
         CreateUserResponse createUserResponse = null;
         try {
             if (userService.userAlreadyExists(createUserRequest.getUsername())) {
+                logger.info("Existing User");
+                webAppApplicationMetrics.addCount(EXISTING_USER_METRIC);
                 return new ResponseEntity<Object>(
                         new ErrorMessages("User already exists"), HttpStatus.BAD_REQUEST);
             }
@@ -98,12 +120,14 @@ public class UserManagementController {
             createUserResponse = new CreateUserResponse(createdUser);
             logger.debug("User created successfully. User ID = " + createdUser.getId());
         } catch (WebappExceptions e) {
-            logger.error("Some unexpected exception occurred.", e);
-            return new ResponseEntity<Object>(new ErrorMessages("Some internal service error occurred"),
+            logger.error("UserManagementController: Some unexpected exception occurred while creating user.", e);
+            webAppApplicationMetrics.addCount(CREATE_USER_ERROR_METRIC);
+            return new ResponseEntity<Object>(new ErrorMessages("Some internal service error occurred while creating user"),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {
-            logger.error("** Some unexpected exception occurred.", e);
-            return new ResponseEntity<Object>(new ErrorMessages("Some internal service error occurred"),
+            logger.error("UserManagementController: Some unexpected exception occurred while creating user.", e);
+            webAppApplicationMetrics.addCount(CREATE_USER_ERROR_METRIC);
+            return new ResponseEntity<Object>(new ErrorMessages("Some internal service error occurred while creating user"),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
@@ -117,22 +141,26 @@ public class UserManagementController {
 
         String userName = getUserNameFromAuthHeader(headers);
         if (userName == null) {
+            webAppApplicationMetrics.addCount(GET_USER_ERROR_METRIC);
             return new ResponseEntity<Object>(new ErrorMessages("Cannot extract username"),
                     HttpStatus.BAD_REQUEST);
         }
 
-        logger.info("Get User API called for username " + userName);
+        logger.info("UserManagementController: Get User API called for username " + userName);
+        webAppApplicationMetrics.addCount(GET_USER_METRIC);
 
         User user = null;
         try { //user input validations
             user = userService.getUser(userName, id);
             if (user == null) {
+                webAppApplicationMetrics.addCount(GET_USER_ERROR_METRIC);
                 return new ResponseEntity<Object>(
                         new ErrorMessages("Invalid username or password. No such user found"),
                         HttpStatus.BAD_REQUEST);
             }
         } catch (WebappExceptions e) {
-            logger.error("Unexpected exception occurred. Exception - " + e.getMessage());
+            logger.error("UserManagementController: Unexpected exception occurred while fetching user details. Exception - " + e.getMessage());
+            webAppApplicationMetrics.addCount(GET_USER_ERROR_METRIC);
             return new ResponseEntity<Object>(new ErrorMessages("Internal service error encountered"),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -147,22 +175,26 @@ public class UserManagementController {
 
         String userName = getUserNameFromAuthHeader(headers);
         if (userName == null) {
+            webAppApplicationMetrics.addCount(UPDATE_USER_ERROR_METRIC);
             return new ResponseEntity<Object>(new ErrorMessages("username in the header is empty"),
                     HttpStatus.BAD_REQUEST);
         }
 
         if (!checkValidUsername(userName)) {
+            webAppApplicationMetrics.addCount(UPDATE_USER_ERROR_METRIC);
             return new ResponseEntity<Object>(
                     new ErrorMessages("Invalid username. Enter valid email address (example@mail.com)"), HttpStatus.BAD_REQUEST);
         }
 
         // validate input user and send bad request
-        logger.info("Called Update User API");
+        logger.info("UserManagementController: Called Update User API");
+        webAppApplicationMetrics.addCount(UPDATE_USER_METRIC);
         UpdateUserRequest updateUserRequest = null;
         try {
             updateUserRequest = requestHandlers.buildUpdateUserRequest(updateUserRequestPayload);
         } catch (WebappExceptions e) {
-            logger.error("Exception while mapping update user request.", e);
+            webAppApplicationMetrics.addCount(UPDATE_USER_ERROR_METRIC);
+            logger.error("UserManagementController: Exception while mapping update user request.", e);
             return new ResponseEntity<Object>(new ErrorMessages("Invalid update user inputs"),
                     HttpStatus.BAD_REQUEST);
         }
@@ -171,6 +203,7 @@ public class UserManagementController {
         User updatedUser = null;
         try {
             if (!userService.userAlreadyExists(updateUserRequest.getUsername())) {
+                webAppApplicationMetrics.addCount(UPDATE_USER_ERROR_METRIC);
                 return new ResponseEntity<Object>(
                         new ErrorMessages("User " + updateUserRequest.getUsername() + " does not exists"),
                         HttpStatus.BAD_REQUEST);
@@ -178,7 +211,8 @@ public class UserManagementController {
             updatedUser = userService.updateUser(updateUserRequest, id);
             logger.debug("User created successfully. User ID = " + updatedUser.getId());
         } catch (WebappExceptions e) {
-            logger.error("Some unexpected exception occurred.", e);
+            logger.error("UserManagementController: Some unexpected exception occurred while updating user details.", e);
+            webAppApplicationMetrics.addCount(UPDATE_USER_ERROR_METRIC);
             return new ResponseEntity<Object>(new ErrorMessages("Some internal service error occurred")
                     , HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -216,9 +250,11 @@ public class UserManagementController {
     @PostMapping(path= "/documents",headers = ("content-type=multipart/*"), consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Object> addFile(@RequestParam("file") MultipartFile multipartFile,
                                                 @RequestHeader HttpHeaders headers) throws IOException {
-        logger.info("Called Add File API");
+        logger.info("UserManagementController: Called Add File API");
+        webAppApplicationMetrics.addCount(UPLOAD_DOCUMENT_METRIC);
         String userName = getUserNameFromAuthHeader(headers);
         if (userName == null) {
+            webAppApplicationMetrics.addCount(UPLOAD_FILE_ERROR_METRIC);
             return new ResponseEntity<Object>(new ErrorMessages("Cannot extract username"),
                     HttpStatus.BAD_REQUEST);
         }
@@ -230,6 +266,7 @@ public class UserManagementController {
 
             User user = userService.getUserByUsername(userName);
             if (user == null) {
+                webAppApplicationMetrics.addCount(UPLOAD_FILE_ERROR_METRIC);
                 return new ResponseEntity<Object>(
                         new ErrorMessages("User " + userName + " does not exists"),
                         HttpStatus.BAD_REQUEST);
@@ -237,11 +274,13 @@ public class UserManagementController {
 
             FileDetails = userService.uploadFile(uploadFileRequest);
         } catch (WebappExceptions e) {
-            logger.error("Some unexpected exception occurred.", e);
-            return new ResponseEntity<Object>(new ErrorMessages("Some internal service error occurred"),
+            logger.error("UserManagementController: Some unexpected exception occurred while uploading document.", e);
+            webAppApplicationMetrics.addCount(UPLOAD_FILE_ERROR_METRIC);
+            return new ResponseEntity<Object>(new ErrorMessages("Some internal service error occurred while uploading document"),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {
-            logger.error("** Some unexpected exception occurred.", e);
+            logger.error("UserManagementController: Some unexpected exception occurred while uploading document.", e);
+            webAppApplicationMetrics.addCount(UPLOAD_FILE_ERROR_METRIC);
             return new ResponseEntity<Object>(new ErrorMessages("Some internal service error occurred"),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -251,9 +290,11 @@ public class UserManagementController {
 
     @GetMapping(path= "/documents/{docID}")
     public ResponseEntity<Object> getFileDetailsWithFileID(@PathVariable(value="docID") String docId, @RequestHeader HttpHeaders headers) throws IOException {
-        logger.info("Called Get Specific File API");
+        logger.info("UserManagementController: Called Get Specific File API");
+        webAppApplicationMetrics.addCount(GET_DOCUMENT_WITH_DOCUMENT_ID_METRIC);
         String userName = getUserNameFromAuthHeader(headers);
         if (userName == null) {
+            webAppApplicationMetrics.addCount(GET_FILE_WITH_FILE_ID_ERROR_METRIC);
             return new ResponseEntity<Object>(new ErrorMessages("Cannot extract username"),
                     HttpStatus.BAD_REQUEST);
         }
@@ -263,6 +304,7 @@ public class UserManagementController {
 
             User user = userService.getUserByUsername(userName);
             if (user == null) {
+                webAppApplicationMetrics.addCount(GET_FILE_WITH_FILE_ID_ERROR_METRIC);
                 return new ResponseEntity<Object>(
                         new ErrorMessages("User " + userName + " does not exists"),
                         HttpStatus.BAD_REQUEST);
@@ -270,11 +312,14 @@ public class UserManagementController {
 
             FileDetails = userService.getFileDetailsFromDocId(user.getId(), docId );
         } catch (WebappExceptions e) {
-            logger.error("Some unexpected exception occurred.", e);
+            logger.error("UserManagementController: Some unexpected exception occurred while fetching specific document .", e);
+            webAppApplicationMetrics.addCount(GET_FILE_WITH_FILE_ID_ERROR_METRIC);
             return new ResponseEntity<Object>(new ErrorMessages("Some internal service error occurred"),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {
-            logger.error("** Some unexpected exception occurred.", e);
+            logger.error("UserManagementController: Some unexpected exception occurred while fetching specific " +
+                    "document .", e);
+            webAppApplicationMetrics.addCount(GET_FILE_WITH_FILE_ID_ERROR_METRIC);
             return new ResponseEntity<Object>(new ErrorMessages("Some internal service error occurred"),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -289,8 +334,10 @@ public class UserManagementController {
     @GetMapping(path= "/documents")
     public HttpEntity<? extends Object> getAllFileDetails(@RequestHeader HttpHeaders headers) throws IOException {
         logger.info("Called Get All File API");
+        webAppApplicationMetrics.addCount(GET_DOCUMENT_METRIC);
         String userName = getUserNameFromAuthHeader(headers);
         if (userName == null) {
+            webAppApplicationMetrics.addCount(GET_FILE_ERROR_METRIC);
             return new ResponseEntity<List<Object>>((List<Object>) new ErrorMessages("Cannot extract username when calling Get All files API"),
                     HttpStatus.BAD_REQUEST);
         }
@@ -300,6 +347,7 @@ public class UserManagementController {
 
             User user = userService.getUserByUsername(userName);
             if (user == null) {
+                webAppApplicationMetrics.addCount(GET_FILE_ERROR_METRIC);
                 return new ResponseEntity<List<Object>>(
                         (List<Object>) new ErrorMessages("User " + userName + " does not exists"),
                         HttpStatus.BAD_REQUEST);
@@ -307,12 +355,14 @@ public class UserManagementController {
 
             fileDetailsList = userService.getFileDetails(user.getId());
         } catch (WebappExceptions e) {
-            logger.error("Some unexpected exception occurred.");
+            logger.error("UserManagementController: Some unexpected exception occurred while fetching all documents .");
+            webAppApplicationMetrics.addCount(GET_FILE_ERROR_METRIC);
             e.printStackTrace();
             return new ResponseEntity<List<Object>>((List<Object>) new ErrorMessages("Some internal service error occurred"),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {
-            logger.error("** Some unexpected exception occurred.");
+            logger.error("UserManagementController: Some unexpected exception occurred wile fetching all documents .");
+            webAppApplicationMetrics.addCount(GET_FILE_ERROR_METRIC);
             e.printStackTrace();
             return new ResponseEntity<List<Object>>((List<Object>) new ErrorMessages("Some internal service error occurred"),
                     HttpStatus.INTERNAL_SERVER_ERROR);
@@ -328,9 +378,11 @@ public class UserManagementController {
     @DeleteMapping(path= "/documents/{docID}")
     public ResponseEntity<Object> deleteProfilePic(@PathVariable(value="docID") String docId, @RequestHeader HttpHeaders headers) throws IOException {
         logger.info("Called delete file API");
+        webAppApplicationMetrics.addCount(DELETE_DOCUMENT_METRIC);
         String userName = getUserNameFromAuthHeader(headers);
         System.out.println("In Delete: user name in header:" + userName);
         if (userName == null) {
+            webAppApplicationMetrics.addCount(DELETE_FILE_ERROR_METRIC);
             return new ResponseEntity<Object>(new ErrorMessages("Cannot extract username"),
                     HttpStatus.BAD_REQUEST);
         }
@@ -340,6 +392,7 @@ public class UserManagementController {
 
             User user = userService.getUserByUsername(userName);
             if (user == null) {
+                webAppApplicationMetrics.addCount(DELETE_FILE_ERROR_METRIC);
                 return new ResponseEntity<Object>(
                         new ErrorMessages("User " + userName + " does not exists"),
                         HttpStatus.BAD_REQUEST);
@@ -347,11 +400,14 @@ public class UserManagementController {
 
             fileFound = userService.deleteFile(user.getId(), docId);
         } catch (WebappExceptions e) {
-            logger.error("Some unexpected exception occurred.", e);
+            logger.error("UserManagementController: Some unexpected exception occurred while deleting document.", e);
+            webAppApplicationMetrics.addCount(DELETE_FILE_ERROR_METRIC);
             return new ResponseEntity<Object>(new ErrorMessages("Some internal service error occurred"),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         } catch (Exception e) {
-            logger.error("** Some unexpected exception occurred.", e);
+            logger.error("UserManagementController: Some unexpected exception occurred while " +
+                    "deleting document.", e);
+            webAppApplicationMetrics.addCount(DELETE_FILE_ERROR_METRIC);
             return new ResponseEntity<Object>(new ErrorMessages("Some internal service error occurred"),
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }

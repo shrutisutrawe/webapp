@@ -75,3 +75,16 @@ sudo systemctl daemon-reload
 sudo systemctl start myapp.service
 sudo systemctl enable myapp.service
 sudo systemctl status myapp.service
+
+#sudo wget https://aws-codedeploy-us-west-2.s3.us-west-2.amazonaws.com/latest/install
+#chmod +x ./install
+#sudo ./install auto
+#sudo service codedeploy-agent status
+#sudo service codedeploy-agent start
+#sudo service codedeploy-agent status
+
+sudo wget https://s3.us-west-2.amazonaws.com/amazoncloudwatch-agent-us-west-2/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
+sudo dpkg -i -E ./amazon-cloudwatch-agent.deb
+sudo wget https://csye6225-shruti.s3.us-west-2.amazonaws.com/cloudwatch-config.json
+sudo chmod 755 cloudwatch-config.json
+sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c file:/opt/webapps/cloudwatch-config.json
