@@ -144,7 +144,7 @@ public class UserManagementService implements UserDetailsService {
 
         //we have loaded the properties, so close the file handle
         file.close();
-        logger.info("readin profile file");
+        logger.info("UserManagementService: reading profile file");
 
         mainProperties.forEach((key,value)-> configParameters.put((String) key,(String) value));
 
@@ -184,15 +184,6 @@ public class UserManagementService implements UserDetailsService {
 
         return configParameters;
     }
-//
-//    String getRandomVerificationToken() {
-//        Random r = new Random();
-//        char[] array = new char[16];
-//        for (int count = 0; count < 16; count++) {
-//            array[count] = (char)(r.nextInt(26) + 'a');
-//        }
-//        return new String(array);
-//    }
 
     public FileDetails uploadFile(
             UploadFileRequest uploadFileRequest) throws WebappExceptions {
@@ -202,12 +193,12 @@ public class UserManagementService implements UserDetailsService {
         String s3Path = null;
         FileDetails fileDetails = null;
         try {
-            logger.info("Uploading new Image");
+            logger.info("UserManagementService: Uploading new document");
             s3Path = uploadToS3Builder.uploadFile(FileUploadS3BucketName, user.getId(), uploadFileRequest);
-            logger.info("Adding new DB entry with S3 path - " + s3Path);
+            logger.info("UserManagementService: Adding new DB entry with S3 path - " + s3Path);
             fileDetails = fileHandlingRepo.addFileDetails(user, s3Path, uploadFileRequest);
         } catch (WebappExceptions e) {
-            logger.error("Exception while adding file metadata. Removing entry from S3 and DB");
+            logger.error("UserManagementService: Exception while adding file metadata. Removing entry from S3 and DB");
             uploadToS3Builder.deleteFile(FileUploadS3BucketName, s3Path);
             throw (e);
         }
