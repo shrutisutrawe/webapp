@@ -62,7 +62,8 @@ sudo ls -lrt
 # shellcheck disable=SC2164
 
 sudo pwd
-sudo cp /home/ubuntu/demo1-0.0.1-SNAPSHOT.jar /opt/webapps/.
+sudo mv /home/ubuntu/demo1-0.0.1-SNAPSHOT.jar /opt/webapps/.
+sudo mv /home/ubuntu/cloudwatch-config.json /opt/webapps/.
 
 # shellcheck disable=SC2164
 cd /opt/webapps
@@ -85,6 +86,7 @@ sudo systemctl status myapp.service
 
 sudo wget https://s3.us-west-2.amazonaws.com/amazoncloudwatch-agent-us-west-2/ubuntu/amd64/latest/amazon-cloudwatch-agent.deb
 sudo dpkg -i -E ./amazon-cloudwatch-agent.deb
-sudo wget https://csye6225-shruti.s3.us-west-2.amazonaws.com/cloudwatch-config.json
+
+#sudo wget https://csye6225-shruti.s3.us-west-2.amazonaws.com/cloudwatch-config.json
 sudo chmod 755 cloudwatch-config.json
 sudo /opt/aws/amazon-cloudwatch-agent/bin/amazon-cloudwatch-agent-ctl -a fetch-config -m ec2 -s -c file:/opt/webapps/cloudwatch-config.json

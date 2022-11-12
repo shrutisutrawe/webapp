@@ -28,7 +28,7 @@ jobs:
           pwd
           ls
           mvn -B package --file pom.xml
-          mkdir staging && cp target/*.jar staging
+          mkdir staging && cp target/*.jar staging && cp cloudwatch-config.json staging
           pwd
           ls -al
 
