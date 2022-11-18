@@ -115,7 +115,7 @@ APIs
       }
       ``` 
 
-(6) **Delete Documents**
+(7) **Delete Documents**
 - Path: ``/v1/document/{doc_id}``
 - HTTP Method DELETE
 - Parameters: None
@@ -123,7 +123,17 @@ APIs
 - Expected response:
     - HTTP **200** OK indicating the user exists and details fetched successfully
       ```
-      {} 
+      {}
+
+(8) **Verify User Email**
+- Path: ``/v1/verifyUserEmail?email=user@example.com&token=sometoken``
+- HTTP Method GET
+- Parameters: None
+- Auth: Basic auth (username/password)
+- Expected response:
+    - HTTP **200** OK indicating the user email has been verified successfully 
+      ```
+      {}
 Database
 ----------------------
 - **DB**: MySQL
