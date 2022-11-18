@@ -110,6 +110,7 @@ public class UserManagementController {
         User createdUser = null;
         CreateUserResponse createUserResponse = null;
         try {
+
             if (userService.userAlreadyExists(createUserRequest.getUsername())) {
                 logger.info("Existing User");
                 webAppApplicationMetrics.addCount(EXISTING_USER_METRIC);
@@ -165,6 +166,11 @@ public class UserManagementController {
                     HttpStatus.INTERNAL_SERVER_ERROR);
         }
 
+        if (!userService.isUserVerified(user)) {
+            return new ResponseEntity<Object>(
+                    new ErrorMessages("User account is unverified"), HttpStatus.UNAUTHORIZED);
+        }
+
         return new ResponseEntity<Object>(new GetUserResponse(user), HttpStatus.OK);
     }
 
@@ -202,6 +208,12 @@ public class UserManagementController {
         updateUserRequest.setUsername(userName);
         User updatedUser = null;
         try {
+            User user = userService.getUserByUsername(userName);
+            if (!userService.isUserVerified(user)) {
+                return new ResponseEntity<Object>(
+                        new ErrorMessages("User account is unverified"), HttpStatus.UNAUTHORIZED);
+            }
+
             if (!userService.userAlreadyExists(updateUserRequest.getUsername())) {
                 webAppApplicationMetrics.addCount(UPDATE_USER_ERROR_METRIC);
                 return new ResponseEntity<Object>(
@@ -271,6 +283,10 @@ public class UserManagementController {
                         new ErrorMessages("User " + userName + " does not exists"),
                         HttpStatus.BAD_REQUEST);
             }
+            if (!userService.isUserVerified(user)) {
+                return new ResponseEntity<Object>(
+                        new ErrorMessages("User account is unverified"), HttpStatus.UNAUTHORIZED);
+            }
 
             FileDetails = userService.uploadFile(uploadFileRequest);
         } catch (WebappExceptions e) {
@@ -308,6 +324,11 @@ public class UserManagementController {
                 return new ResponseEntity<Object>(
                         new ErrorMessages("User " + userName + " does not exists"),
                         HttpStatus.BAD_REQUEST);
+            }
+
+            if (!userService.isUserVerified(user)) {
+                return new ResponseEntity<Object>(
+                        new ErrorMessages("User account is unverified"), HttpStatus.UNAUTHORIZED);
             }
 
             FileDetails = userService.getFileDetailsFromDocId(user.getId(), docId );
@@ -398,6 +419,11 @@ public class UserManagementController {
                         HttpStatus.BAD_REQUEST);
             }
 
+            if (!userService.isUserVerified(user)) {
+                return new ResponseEntity<Object>(
+                        new ErrorMessages("User account is unverified"), HttpStatus.UNAUTHORIZED);
+            }
+
             fileFound = userService.deleteFile(user.getId(), docId);
         } catch (WebappExceptions e) {
             logger.error("UserManagementController: Some unexpected exception occurred while deleting document.", e);
@@ -416,5 +442,46 @@ public class UserManagementController {
             return new ResponseEntity<Object>(HttpStatus.NO_CONTENT);
         }
         return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
+    }
+
+    @GetMapping(path= "/verifyUserEmail")
+    public @ResponseBody String verifyUserEmail(@RequestParam("email") String userName,
+                                                @RequestParam("token") String token){
+
+        if (userName == null || token == null || userName.isEmpty() || token.isEmpty()) {
+            return "Unable to verify user with email [" + userName + "]. No such user found.";
+        }
+
+        try {
+            User user = userService.getUserByUsername(userName);
+
+            if (user == null) {
+                return "Unable to verify user with email " + userName + " No such user found.";
+            }
+
+            logger.info("user found");
+            logger.info(user.toString());
+            logger.info("username:" + user.getUsername());
+            logger.info("password:" + user.getPassword());
+            logger.info("firstname:" + user.getFirst_name());
+            logger.info("lastname:" + user.getLast_name());
+            logger.info("created:" + user.getAccount_created());
+            logger.info("updated:" + user.getAccount_updated());
+            logger.info("verified:" + user.getVerified());
+
+            if (userService.isUserVerified(user)) {
+                return "User Already Verified";
+            }
+
+            boolean verificationSuccessful = userService.verifyUser(userName, token);
+            if (verificationSuccessful) {
+                return "Successfully Verified user with email " + userName;
+            }
+
+            return "Unable to verify user with email " + userName;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Unable to verify user with email " + userName + " Some internal service error occurred";
+        }
     }
 }

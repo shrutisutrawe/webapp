@@ -8,6 +8,9 @@ public class User {
     private String password;
     private String account_created;
     private String account_updated;
+    private String verified;
+    public static String USER_ACCOUNT_NOT_VERIFIED_STATUS = "NOT_VERIFIED";
+    public static String USER_ACCOUNT_VERIFIED_STATUS = "VERIFIED";
 
     public User() {
     }
@@ -20,6 +23,7 @@ public class User {
         this.password = user.password;
         this.account_created = user.account_created;
         this.account_updated = user.account_updated;
+        this.verified = verified;
     }
 
     public String getId() {
@@ -76,5 +80,13 @@ public class User {
 
     public void setAccount_created(String account_created) {
         this.account_created = account_created;
+    }
+
+    public String getVerified() {
+        return verified;
+    }
+
+    public void setVerified(String verified) {
+        this.verified = verified;
     }
 }

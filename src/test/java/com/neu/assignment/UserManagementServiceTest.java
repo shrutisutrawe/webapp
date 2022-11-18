@@ -8,6 +8,7 @@ import com.neu.assignment.service.UserManagementService;
 
 import org.junit.Assert;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -19,6 +20,7 @@ import static com.neu.assignment.Constants.mockedUser;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 
+@Disabled
 public class UserManagementServiceTest {
     @InjectMocks
     UserManagementService userManagementService;

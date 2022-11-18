@@ -3,13 +3,17 @@ import com.amazonaws.util.StringUtils;
 import com.neu.assignment.controller.createUser.CreateUserRequest;
 import com.neu.assignment.controller.fileOperations.UploadFileRequest;
 import com.neu.assignment.controller.updateUser.UpdateUserRequest;
+
 import com.neu.assignment.datalayer.FileHandlingRepo;
 import com.neu.assignment.datalayer.FileHandlingRepoImplementation;
 import com.neu.assignment.datalayer.UploadToS3Builder;
+import com.neu.assignment.datalayer.AmazonDDB;
 import com.neu.assignment.model.FileDetails;
 import com.neu.assignment.model.User;
 import com.neu.assignment.exceptions.WebappExceptions;
 import com.neu.assignment.model.UserCredentials;
+import com.neu.assignment.notification.AmazonSNSUtil;
+import com.neu.assignment.notification.NotificationMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +25,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.io.*;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
+
+import static com.neu.assignment.notification.NotificationMessageType.EMAIL_VERIFICATION_NOTIFICATION;
 
 @Service
 @ResponseStatus
@@ -35,6 +40,13 @@ public class UserManagementService implements UserDetailsService {
 
     @Autowired
     UploadToS3Builder uploadToS3Builder;
+
+    @Autowired
+     AmazonDDB amazonDDB;
+
+    @Autowired
+    AmazonSNSUtil amazonSNSUtil;
+
 
     FileHandlingRepo fileHandlingRepo;
 
@@ -50,29 +62,47 @@ public class UserManagementService implements UserDetailsService {
         this.fileHandlingRepo = fileHandlingRepo;
     }
 
-//    public void createUsersDataStorage() throws WebappExceptions {
-//        userDatabaseRepo.createUsersTable();
-//    }
+    String getRandomVerificationToken() {
+        Random r = new Random();
+        char[] array = new char[16];
+        for (int count = 0; count < 16; count++) {
+            array[count] = (char)(r.nextInt(26) + 'a');
+        }
+        return new String(array);
+    }
+
     public void createUsersDataStorage() throws WebappExceptions, IOException {
 
         Map<String, String> configParameters = loadConfigurationParametersFromDisk();
 
         fileHandlingRepo.initialize(configParameters);
         this.FileUploadS3BucketName = configParameters.get("AWS_S3_BUCKET_NAME");
-//        this.FileUploadS3BucketName = "csye6225bucketshrutitobedeleted";
+        amazonSNSUtil.initialize(configParameters);
     }
 
     public User createUser(CreateUserRequest createUserRequest) throws WebappExceptions {
         logger.info("create new user request called");
 
+        User newUser =null;
+        try{
         // Create new user
-        createUserRequest.setPassword(generatePassword.encode(createUserRequest.getPassword()));
-        User newUser = fileHandlingRepo.createUser(createUserRequest.getFirst_name(),
-                createUserRequest.getLast_name(),
-                createUserRequest.getUsername(),
-                createUserRequest.getPassword());
-        logger.info("New User Created = " + newUser.getId());
-
+            createUserRequest.setPassword(generatePassword.encode(createUserRequest.getPassword()));
+            newUser = fileHandlingRepo.createUser(createUserRequest.getFirst_name(),
+                    createUserRequest.getLast_name(),
+                    createUserRequest.getUsername(),
+                    createUserRequest.getPassword());
+            logger.info("New User Created = " + newUser.getId());
+            if (newUser == null) {
+                return newUser;
+            }
+            setUpOneTimeUserVerification(newUser);
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (newUser != null) {
+                fileHandlingRepo.deleteUser(newUser.getUsername());
+            }
+            throw new WebappExceptions("Some exception while creating user", e);
+        }
         return newUser;
     }
 
@@ -151,36 +181,6 @@ public class UserManagementService implements UserDetailsService {
         for (Object key: mainProperties.keySet()) {
             logger.info(key + ": " + mainProperties.getProperty(key.toString()));
         }
-//
-//        try (InputStreamReader streamReader =
-//                     new InputStreamReader(inputStream, StandardCharsets.UTF_8);
-//             BufferedReader reader = new BufferedReader(streamReader)) {
-//
-//            String line;
-//            while ((line = reader.readLine()) != null) {
-//                String[] config = line.split("=");
-//                if(config.length == 2) {
-//                    configParameters.put(config[0], config[1]);
-//                    logger.info("Loaded config param : " + config[0] + " = " + config[1]);
-//                }
-//            }
-//
-//        } catch (IOException e) {
-//            logger.info("Exception occured while readin profile file");
-//            e.printStackTrace();
-//            throw new WebappExceptions("Exception while loading service config parameters from file.", e);
-//        }
-
-//        try (BufferedReader br = new BufferedReader(new FileReader(file))) {
-//            String line;
-//            while ((line = br.readLine()) != null) {
-//                String[] config = line.split("=");
-//                configParameters.put(config[0], config[1]);
-//                logger.info("Loaded config param : " + config[0] + " = " + config[1]);
-//            }
-//        } catch (IOException e) {
-//            throw new WebappExceptions("Exception while loading service config parameters from file.", e);
-//        }
 
         return configParameters;
     }
@@ -198,6 +198,7 @@ public class UserManagementService implements UserDetailsService {
             logger.info("UserManagementService: Adding new DB entry with S3 path - " + s3Path);
             fileDetails = fileHandlingRepo.addFileDetails(user, s3Path, uploadFileRequest);
         } catch (WebappExceptions e) {
+            e.printStackTrace();
             logger.error("UserManagementService: Exception while adding file metadata. Removing entry from S3 and DB");
             uploadToS3Builder.deleteFile(FileUploadS3BucketName, s3Path);
             throw (e);
@@ -222,5 +223,63 @@ public class UserManagementService implements UserDetailsService {
         uploadToS3Builder.deleteFile(FileUploadS3BucketName, fileDetails.getS3_bucket_path());
         fileHandlingRepo.deleteFile(userId, fileDetails.getDoc_id());
         return true;
+    }
+
+    void setUpOneTimeUserVerification(User user) {
+        String oneTimeVerificationToken = getRandomVerificationToken();
+        System.out.println("One time verification token");
+        System.out.println(oneTimeVerificationToken);
+        amazonDDB.uploadUserVerificationToken(user.getUsername(), oneTimeVerificationToken);
+        amazonSNSUtil.notifyUserForAccountVerification(
+                new NotificationMessage(
+                        user.getUsername(),
+                        user.getFirst_name(),
+                        oneTimeVerificationToken,
+                        EMAIL_VERIFICATION_NOTIFICATION));
+    }
+
+    public boolean isUserVerified(User user) {
+        logger.info("inside is user verified");
+        logger.info("username:" + user.getUsername());
+        logger.info("verified:" + user.getVerified());
+        String accountVerificationStatus = user.getVerified();
+        return User.USER_ACCOUNT_VERIFIED_STATUS.equals(accountVerificationStatus);
+    }
+
+    public boolean verifyUser(String username, String oneTimeToken) {
+        logger.info("inside verify user function");
+        logger.info(username);
+        logger.info(oneTimeToken);
+        User user = getUserByUsername(username);
+        if (user.getVerified().equals(User.USER_ACCOUNT_VERIFIED_STATUS)) {
+            return true;
+        }
+        boolean verificationStatus = false;
+
+        try {
+            String expectedVerificationToken = amazonDDB.getUserVerificationToken(user.getUsername());
+            String expectedVerificationTokenExpiry =
+                    amazonDDB.getUserVerificationTokenExpiryTime(user.getUsername());
+            int expectedVerificationTokenExpiryIntValue = Integer.parseInt(expectedVerificationTokenExpiry);
+
+            if((System.currentTimeMillis() / 1000L) > expectedVerificationTokenExpiryIntValue){
+                logger.info("Token expired for username:" + username);
+                return false;
+            }
+            verificationStatus = oneTimeToken.equals(expectedVerificationToken);
+
+            if (verificationStatus == false) {
+                logger.info("Verification token mismatch. Expected " + expectedVerificationToken + "  " +
+                        "found " + oneTimeToken);
+                return false;
+            }
+
+            fileHandlingRepo.setUserVerified(user.getUsername());
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new WebappExceptions("Some exception while verifying user ", e);
+        }
+
+        return verificationStatus;
     }
 }

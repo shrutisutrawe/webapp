@@ -31,5 +31,5 @@ public interface FileHandlingRepo {
 
     void initialize(Map<String, String> configParameters) throws WebappExceptions;
 
-//    void setUserVerified(String username) throws WebappExceptions;
+   void setUserVerified(String username) throws WebappExceptions;
 }

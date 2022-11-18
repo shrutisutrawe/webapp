@@ -82,6 +82,7 @@ public class FileHandlingRepoImplementation extends JdbcDaoSupport implements Fi
         newlyCreatedUser.setPassword(password);
         newlyCreatedUser.setAccount_updated(currentTime.toString());
         newlyCreatedUser.setAccount_created(currentTime.toString());
+        newlyCreatedUser.setVerified(User.USER_ACCOUNT_NOT_VERIFIED_STATUS);
 
         String userId = UUID.randomUUID().toString();
         newlyCreatedUser.setId(userId);
@@ -94,8 +95,10 @@ public class FileHandlingRepoImplementation extends JdbcDaoSupport implements Fi
             preparedStatement.setString(5, newlyCreatedUser.getPassword());
             preparedStatement.setString(6, newlyCreatedUser.getAccount_created());
             preparedStatement.setString(7, newlyCreatedUser.getAccount_updated());
+            preparedStatement.setString(8, newlyCreatedUser.getVerified());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new WebappExceptions("Unexpected Exception while creating User", e);
         }
 
@@ -131,12 +134,15 @@ public class FileHandlingRepoImplementation extends JdbcDaoSupport implements Fi
                     user.setId(resultSet.getString("id"));
                     user.setAccount_updated(resultSet.getString("account_updated"));
                     user.setAccount_created(resultSet.getString("account_created"));
+                    user.setVerified(resultSet.getString("verified"));
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 logger.error("No User details. Returning null user", e);
                 return null;
             }
         } catch (SQLException e) {
+            e.printStackTrace();
             logger.error("Unexpected Exception while fetching User " + user_name, e);
             throw new WebappExceptions("Unexpected Exception while fetching User", e);
         }
@@ -161,12 +167,15 @@ public class FileHandlingRepoImplementation extends JdbcDaoSupport implements Fi
                     user.setId(resultSet.getString("id"));
                     user.setAccount_updated(resultSet.getString("account_updated"));
                     user.setAccount_created(resultSet.getString("account_created"));
+                    user.setVerified(resultSet.getString("verified"));
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 logger.error("No User details. Returning null user", e);
                 return null;
             }
         } catch (SQLException e) {
+            e.printStackTrace();
             logger.error("Unexpected Exception while fetching User " + user_name, e);
             throw new WebappExceptions("Unexpected Exception while fetching User", e);
         }
@@ -185,6 +194,7 @@ public class FileHandlingRepoImplementation extends JdbcDaoSupport implements Fi
             preparedStatement.setString(6, id);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
+            e.printStackTrace();
             logger.error("Unexpected Exception while updating User " + user_name, e);
             throw new WebappExceptions("Unexpected Exception while updating User " + user_name, e);
         }
@@ -226,6 +236,7 @@ public class FileHandlingRepoImplementation extends JdbcDaoSupport implements Fi
             preparedStatement.setString(5, FileDetails.getDate_created());
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
+            e.printStackTrace();
             logger.error("Unexpected Exception while uploading file for user " + user.getUsername(), e);
             throw new WebappExceptions("Unexpected Exception while uploading file for user " + user.getUsername(), e);
         }
@@ -242,6 +253,7 @@ public class FileHandlingRepoImplementation extends JdbcDaoSupport implements Fi
             preparedStatement.setString(2, docId);
             preparedStatement.executeUpdate();
         } catch (SQLException e) {
+            e.printStackTrace();
             logger.error("Unexpected Exception while deleting file for user " + userId, e);
             throw new WebappExceptions("Unexpected Exception while deleting file for user " + userId, e);
         }
@@ -270,11 +282,13 @@ public class FileHandlingRepoImplementation extends JdbcDaoSupport implements Fi
                             FileDetails.getFile_name(), FileDetails.getS3_bucket_path(), FileDetails.getDate_created()));
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 logger.error("Exception while getting file details. Returning empty data ", e);
                 return null;
             }
 
         } catch (SQLException e) {
+            e.printStackTrace();
             logger.error("Unexpected Exception while fetching file details for user id " + userId, e);
             throw new WebappExceptions("Unexpected Exception while file details for user id " + userId, e);
         }
@@ -300,11 +314,13 @@ public class FileHandlingRepoImplementation extends JdbcDaoSupport implements Fi
                     FileDetails.setDate_created(resultSet.getString("date_created"));
                 }
             } catch (Exception e) {
+                e.printStackTrace();
                 logger.error("Exception while getting file details. Returning empty data ", e);
                 return null;
             }
 
         } catch (SQLException e) {
+            e.printStackTrace();
             logger.error("Unexpected Exception while fetching file details for user id " + userId, e);
             throw new WebappExceptions("Unexpected Exception while file details for user id " + userId, e);
         }
@@ -324,5 +340,17 @@ public class FileHandlingRepoImplementation extends JdbcDaoSupport implements Fi
         }
 
         logger.info("File upload table created");
+    }
+
+    @Override
+    public void setUserVerified(String username) throws WebappExceptions {
+        try (PreparedStatement preparedStatement = getDBConnection().prepareStatement(Queries.SET_USER_VERIFIED_QUERY)) {
+            preparedStatement.setString(1, User.USER_ACCOUNT_VERIFIED_STATUS);
+            preparedStatement.setString(2, username);
+            preparedStatement.executeUpdate();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            throw new WebappExceptions("Unexpected Exception setting user as verified", e);
+        }
     }
 }
