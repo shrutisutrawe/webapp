@@ -101,7 +101,7 @@ public class UserManagementService implements UserDetailsService {
             if (newUser != null) {
                 fileHandlingRepo.deleteUser(newUser.getUsername());
             }
-            throw new WebappExceptions("Some exception while creating user", e);
+            throw new WebappExceptions("Either already existing email id or Some exception while creating user", e);
         }
         return newUser;
     }
@@ -229,7 +229,14 @@ public class UserManagementService implements UserDetailsService {
         String oneTimeVerificationToken = getRandomVerificationToken();
         System.out.println("One time verification token");
         System.out.println(oneTimeVerificationToken);
-        amazonDDB.uploadUserVerificationToken(user.getUsername(), oneTimeVerificationToken);
+
+        boolean isNewUser = amazonDDB.uploadUserVerificationToken(user.getUsername(), oneTimeVerificationToken);
+        System.out.println("In setup verification existin email is : " + isNewUser);
+        if(!isNewUser){
+            System.out.println("inside if is existin email");
+            throw new WebappExceptions("Existing email id: " + user.getUsername());
+        }
+        System.out.println("exietin email outside if : " + isNewUser);
         amazonSNSUtil.notifyUserForAccountVerification(
                 new NotificationMessage(
                         user.getUsername(),
@@ -261,7 +268,7 @@ public class UserManagementService implements UserDetailsService {
             String expectedVerificationTokenExpiry =
                     amazonDDB.getUserVerificationTokenExpiryTime(user.getUsername());
             int expectedVerificationTokenExpiryIntValue = Integer.parseInt(expectedVerificationTokenExpiry);
-
+            System.out.println("before checking token is : " + (System.currentTimeMillis() / 1000L) );
             if((System.currentTimeMillis() / 1000L) > expectedVerificationTokenExpiryIntValue){
                 logger.info("Token expired for username:" + username);
                 return false;
