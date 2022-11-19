@@ -11,6 +11,7 @@ import com.amazonaws.services.dynamodbv2.document.Table;
 import com.amazonaws.services.dynamodbv2.document.spec.PutItemSpec;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.GetItemRequest;
 import com.amazonaws.services.dynamodbv2.model.GetItemResult;
 import org.slf4j.Logger;
@@ -48,11 +49,11 @@ public class AmazonDDB {
                 Object>();
         verificationMetadataMap.put("one_time_verification_token",
                 oneTimeVerificationToken);
+
         System.out.println("current time before addin token: " + (System.currentTimeMillis() / 1000L));
         verificationMetadataMap.put("token_expiry_time_epoch",
                 ((System.currentTimeMillis() / 1000L) + 200));
-        System.out.println("token expiry time: " + ((System.currentTimeMillis() / 1000L) + 200));
-
+       
         Item item = new Item().withPrimaryKey("email", username)
                 .withMap("verification_metadata", verificationMetadataMap);
 

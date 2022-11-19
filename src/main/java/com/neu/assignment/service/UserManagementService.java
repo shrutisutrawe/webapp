@@ -101,6 +101,7 @@ public class UserManagementService implements UserDetailsService {
             if (newUser != null) {
                 fileHandlingRepo.deleteUser(newUser.getUsername());
             }
+
             throw new WebappExceptions("Either already existing email id or Some exception while creating user", e);
         }
         return newUser;
@@ -237,6 +238,7 @@ public class UserManagementService implements UserDetailsService {
             throw new WebappExceptions("Existing email id: " + user.getUsername());
         }
         System.out.println("exietin email outside if : " + isNewUser);
+        
         amazonSNSUtil.notifyUserForAccountVerification(
                 new NotificationMessage(
                         user.getUsername(),
@@ -268,7 +270,9 @@ public class UserManagementService implements UserDetailsService {
             String expectedVerificationTokenExpiry =
                     amazonDDB.getUserVerificationTokenExpiryTime(user.getUsername());
             int expectedVerificationTokenExpiryIntValue = Integer.parseInt(expectedVerificationTokenExpiry);
+
             System.out.println("before checking token is : " + (System.currentTimeMillis() / 1000L) );
+            
             if((System.currentTimeMillis() / 1000L) > expectedVerificationTokenExpiryIntValue){
                 logger.info("Token expired for username:" + username);
                 return false;
