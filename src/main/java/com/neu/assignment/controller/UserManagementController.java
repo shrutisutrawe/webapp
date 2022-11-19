@@ -373,6 +373,10 @@ public class UserManagementController {
                         (List<Object>) new ErrorMessages("User " + userName + " does not exists"),
                         HttpStatus.BAD_REQUEST);
             }
+            if (!userService.isUserVerified(user)) {
+                return new ResponseEntity<Object>(
+                        new ErrorMessages("User account is unverified"), HttpStatus.UNAUTHORIZED);
+            }
 
             fileDetailsList = userService.getFileDetails(user.getId());
         } catch (WebappExceptions e) {
@@ -478,7 +482,7 @@ public class UserManagementController {
                 return "Successfully Verified user with email " + userName;
             }
 
-            return "Unable to verify user with email " + userName;
+            return "Token expired. Unable to verify user with email " + userName;
         } catch (Exception e) {
             e.printStackTrace();
             return "Unable to verify user with email " + userName + " Some internal service error occurred";
