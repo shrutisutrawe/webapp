@@ -8,6 +8,9 @@ import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.PutItemOutcome;
 import com.amazonaws.services.dynamodbv2.document.Table;
+import com.amazonaws.services.dynamodbv2.document.spec.PutItemSpec;
+import com.amazonaws.services.dynamodbv2.model.AttributeValue;
+import com.amazonaws.services.dynamodbv2.model.ConditionalCheckFailedException;
 import com.amazonaws.services.dynamodbv2.model.AttributeValue;
 import com.amazonaws.services.dynamodbv2.model.GetItemRequest;
 import com.amazonaws.services.dynamodbv2.model.GetItemResult;
@@ -38,7 +41,7 @@ public class AmazonDDB {
         logger.info("DDB client created");
     }
 
-    public void uploadUserVerificationToken(String username, String oneTimeVerificationToken) {
+    public boolean uploadUserVerificationToken(String username, String oneTimeVerificationToken) {
         logger.info("In upload user verification token");
         System.out.println("username: " +username);
         System.out.println("token : "+ oneTimeVerificationToken);
@@ -46,15 +49,24 @@ public class AmazonDDB {
                 Object>();
         verificationMetadataMap.put("one_time_verification_token",
                 oneTimeVerificationToken);
-        verificationMetadataMap.put("token_expiry_time_epoch",
-                ((System.currentTimeMillis() / 1000L) + 120));
 
+        System.out.println("current time before addin token: " + (System.currentTimeMillis() / 1000L));
+        verificationMetadataMap.put("token_expiry_time_epoch",
+                ((System.currentTimeMillis() / 1000L) + 200));
+       
         Item item = new Item().withPrimaryKey("email", username)
                 .withMap("verification_metadata", verificationMetadataMap);
 
-        PutItemOutcome outcome = userAccountVerificationTable.putItem(item);
-        logger.info("userAccountVerificationTable outcome: " + outcome.toString());
-        logger.info("Upload user verification token result");
+        try {
+            PutItemSpec putItemSpec = new PutItemSpec().withItem(item).withConditionExpression("attribute_not_exists(email)");
+            PutItemOutcome outcome = userAccountVerificationTable.putItem(putItemSpec);
+            logger.info("userAccountVerificationTable outcome: " + outcome.toString());
+            logger.info("Upload user verification token result");
+        } catch(ConditionalCheckFailedException e){
+            logger.error("User already exists " + username);
+            return false;
+        }
+        return true;
     }
 
     public String getUserVerificationToken(String username) {
@@ -147,6 +159,7 @@ public class AmazonDDB {
 
         String tokenExpiry = oneTimeVerificationTokenExpiry.getN();
         logger.info("verificationToken expiry time from DDB: " + tokenExpiry);
+        logger.info("current time in epoch : " + (System.currentTimeMillis() / 1000L));
 
         return tokenExpiry;
     }
