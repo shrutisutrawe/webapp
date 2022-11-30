@@ -35,12 +35,14 @@ public class AmazonSNSUtil {
 
     public void initialize(Map<String, String> configParameters) {
         String awsAccountId = configParameters.get("AWS_ACCOUNT_ID");
+        String awsRegion = configParameters.get("AWS_REGION");
         logger.info("aws account id: " + awsAccountId);
         String newUserAccountVerificationTopic = configParameters.get("AWS_USER_EMAIL_VERIFICATION_SNS_TOPIC_NAME");
         serviceHostedDNSName = configParameters.get("AWS_HOSTED_ZONE_DNS");
         port = configParameters.get("PORT");
 
         logger.info("aws hosted zone:" + serviceHostedDNSName);
+        logger.info("aws region :" + awsRegion);
         if (awsAccountId == null) {
             awsAccountId = "097171053993"; // for testing only use demo account
         }
@@ -53,7 +55,9 @@ public class AmazonSNSUtil {
             serviceHostedDNSName = "demo.devshrutisutrawe.me"; // for testing only use demo account
         }
 
-        newUserAccountVerificationTopicArn = "arn:aws:sns:us-west-2:" + awsAccountId + ":" + newUserAccountVerificationTopic;
+        newUserAccountVerificationTopicArn = "arn:aws:sns:" + awsRegion + ":" + awsAccountId + ":" + newUserAccountVerificationTopic;
+        logger.info("newUserAccountVerificationTopicArn");
+        logger.info(newUserAccountVerificationTopicArn);
     }
 
     private boolean publish(String message, String topicArn) {

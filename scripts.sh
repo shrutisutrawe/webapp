@@ -21,8 +21,8 @@ sudo systemctl daemon-reload
 sudo systemctl start tomcat.service
 sudo systemctl enable tomcat.service
 sudo systemctl status tomcat.service
-ss -ltn
-sudo ufw allow from any to any port 8080 proto tcp
+#ss -ltn
+#sudo ufw allow from any to any port 8080 proto tcp
 
 #sudo apt-cache search mysql-server
 #sudo apt info -a mysql-server-8.0
@@ -39,7 +39,7 @@ sudo ufw allow from any to any port 8080 proto tcp
 #sudo systemctl status mysql.service
 #sudo mysql -uroot -pRoot@123 -e "CREATE DATABASE IF NOT EXISTS Csye6225WebServiceDB"
 
-#sudo apt install maven -y
+sudo apt install maven -y
 
 # shellcheck disable=SC2232
 sudo cd

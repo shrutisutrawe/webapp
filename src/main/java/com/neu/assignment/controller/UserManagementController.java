@@ -28,7 +28,7 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 @RestController
-@RequestMapping(path ="/v1")
+@RequestMapping(path ="")
 public class UserManagementController {
     private final UserManagementService userService;
     private final RequestHandlers requestHandlers;
@@ -85,8 +85,14 @@ public class UserManagementController {
                 .matches();
     }
 
+    @GetMapping(path= "/healthz")
+    @ResponseStatus(HttpStatus.OK)
+    public void getResponse(){
+        return ;
+    }
+
     //Create user request
-    @PostMapping(path= "/account", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @PostMapping(path= "v1/account", consumes = MediaType.APPLICATION_JSON_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> createUser(@RequestBody String createUserRequestPayload) {
         logger.info("UserManagementController: Called Create User API");
         logger.info(createUserRequestPayload);
@@ -137,7 +143,7 @@ public class UserManagementController {
     }
 
     //Get User Data Request
-    @GetMapping(path= "/account/{userID}", produces = "application/json")
+    @GetMapping(path= "v1/account/{userID}", produces = "application/json")
     public ResponseEntity<Object> getUser(@PathVariable(value="userID") String id, @RequestHeader HttpHeaders headers) {
 
         String userName = getUserNameFromAuthHeader(headers);
@@ -175,7 +181,7 @@ public class UserManagementController {
     }
 
     //Update User Data Request
-    @PutMapping(path="/account/{userID}", consumes = "application/json", produces = "application/json")
+    @PutMapping(path="v1/account/{userID}", consumes = "application/json", produces = "application/json")
     public ResponseEntity<Object> updateUser(@PathVariable(value="userID") String id, @RequestBody String updateUserRequestPayload,
                                              @RequestHeader HttpHeaders headers) {
 
@@ -259,7 +265,7 @@ public class UserManagementController {
         return splitToken[0];
     }
 
-    @PostMapping(path= "/documents",headers = ("content-type=multipart/*"), consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(path= "v1/documents",headers = ("content-type=multipart/*"), consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Object> addFile(@RequestParam("file") MultipartFile multipartFile,
                                                 @RequestHeader HttpHeaders headers) throws IOException {
         logger.info("UserManagementController: Called Add File API");
@@ -304,7 +310,7 @@ public class UserManagementController {
         return new ResponseEntity<Object>(new UploadFileResponse(FileDetails), HttpStatus.OK);
     }
 
-    @GetMapping(path= "/documents/{docID}")
+    @GetMapping(path= "v1/documents/{docID}")
     public ResponseEntity<Object> getFileDetailsWithFileID(@PathVariable(value="docID") String docId, @RequestHeader HttpHeaders headers) throws IOException {
         logger.info("UserManagementController: Called Get Specific File API");
         webAppApplicationMetrics.addCount(GET_DOCUMENT_WITH_DOCUMENT_ID_METRIC);
@@ -352,7 +358,7 @@ public class UserManagementController {
         return new ResponseEntity<Object>(new UploadFileResponse(FileDetails), HttpStatus.OK);
     }
 
-    @GetMapping(path= "/documents")
+    @GetMapping(path= "v1/documents")
     public HttpEntity<? extends Object> getAllFileDetails(@RequestHeader HttpHeaders headers) throws IOException {
         logger.info("Called Get All File API");
         webAppApplicationMetrics.addCount(GET_DOCUMENT_METRIC);
@@ -400,7 +406,7 @@ public class UserManagementController {
         return new ResponseEntity<Object>(new UploadAllFileResponse(fileDetailsList), HttpStatus.OK);
     }
 
-    @DeleteMapping(path= "/documents/{docID}")
+    @DeleteMapping(path= "v1/documents/{docID}")
     public ResponseEntity<Object> deleteProfilePic(@PathVariable(value="docID") String docId, @RequestHeader HttpHeaders headers) throws IOException {
         logger.info("Called delete file API");
         webAppApplicationMetrics.addCount(DELETE_DOCUMENT_METRIC);
