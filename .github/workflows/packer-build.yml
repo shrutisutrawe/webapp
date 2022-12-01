@@ -2,9 +2,7 @@ name: Run packer build on a template file
 
 on:
   push:
-    branches:
-      - 'assignment9'
-      - 'main'
+    branches: [main]
 jobs:
   packagebuild:
     runs-on: ubuntu-latest
