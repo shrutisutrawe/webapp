@@ -85,7 +85,7 @@ public class UserManagementController {
                 .matches();
     }
 
-    @GetMapping(path= "/healthz")
+    @GetMapping(path= "/health")
     @ResponseStatus(HttpStatus.OK)
     public void getResponse(){
         return ;
@@ -454,7 +454,7 @@ public class UserManagementController {
         return new ResponseEntity<Object>(HttpStatus.NOT_FOUND);
     }
 
-    @GetMapping(path= "/verifyUserEmail")
+    @GetMapping(path= "v1/verifyUserEmail")
     public @ResponseBody String verifyUserEmail(@RequestParam("email") String userName,
                                                 @RequestParam("token") String token){
 
