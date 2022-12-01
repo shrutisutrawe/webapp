@@ -86,6 +86,7 @@ jobs:
             echo $latestLaunchTemplateId
 
             latestAutoScalingGroupName=$(aws autoscaling describe-auto-scaling-groups --query "sort_by(AutoScalingGroups, &CreatedTime)[-1].[AutoScalingGroupName]" --output "text")
+
             echo "latest AutoScalingGroupName:"
             echo $latestAutoScalingGroupName
 
