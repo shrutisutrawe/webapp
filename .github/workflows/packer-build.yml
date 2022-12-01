@@ -96,7 +96,7 @@ jobs:
             echo "latestVersion:"
             echo $latestVersion
 
-            integerVersion=[int]$latestVersion
+            $integerVersion=[int]$latestVersion
             echo "integerVersion:"
             echo $integerVersion
 
