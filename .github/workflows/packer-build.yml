@@ -96,9 +96,7 @@ jobs:
             echo "latestVersion:"
             echo $latestVersion
 
-            incrementValue = 1
-
-            updatedVersion = $latestVersion + $incrementValue
+            updatedVersion = $((echo $latestVersion) + 1)
             echo "updatedVersion:"
             echo $updatedVersion
 
