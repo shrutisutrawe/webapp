@@ -83,7 +83,7 @@ jobs:
           echo "latest ami:"
           echo $latestAmi
           latestLaunchTemplateId=$(aws ec2 describe-launch-templates --query "sort_by(LaunchTemplates, &CreateTime)[-1].[LaunchTemplateId]" --output "text")
-          if [[ ${{ latestLaunchTemplateId != '' }} ]]; then
+          if [[ ${latestLaunchTemplateId} != '' ]]; then
             echo "latest template id:"
             echo $latestLaunchTemplateId
             aws autoscaling update-auto-scaling-group --auto-scaling-group-name  vpc-demo-auto-scaling-group --launch-template LaunchTemplateId=$latestLaunchTemplateId,Version='$Latest'
