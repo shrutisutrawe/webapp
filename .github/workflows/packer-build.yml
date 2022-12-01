@@ -96,13 +96,9 @@ jobs:
             echo "latestVersion:"
             echo $latestVersion
 
-            $integerVersion=[int]$latestVersion
-            echo "integerVersion:"
-            echo $integerVersion
-
             $incrementValue = 1
 
-            $updatedVersion = $integerVersion + $incrementValue
+            $updatedVersion = $latestVersion + $incrementValue
             echo "updatedVersion:"
             echo $updatedVersion
 
