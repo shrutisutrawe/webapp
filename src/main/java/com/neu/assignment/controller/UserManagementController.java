@@ -85,7 +85,7 @@ public class UserManagementController {
                 .matches();
     }
 
-    @GetMapping(path= "/healthz")
+    @GetMapping(path= "/health")
     @ResponseStatus(HttpStatus.OK)
     public void getResponse(){
         return ;
