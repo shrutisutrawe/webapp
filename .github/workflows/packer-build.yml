@@ -2,9 +2,7 @@ name: Run packer build on a template file
 
 on:
   push:
-    branches:
-      - 'assignment9'
-      - 'main'
+    branches: [main]
 jobs:
   packagebuild:
     runs-on: ubuntu-latest
@@ -86,17 +84,28 @@ jobs:
           if [[ ${latestLaunchTemplateId} != 'None' ]]; then
             echo "latest template id:"
             echo $latestLaunchTemplateId
-            aws autoscaling update-auto-scaling-group --auto-scaling-group-name  vpc-demo-auto-scaling-group --launch-template LaunchTemplateId=$latestLaunchTemplateId,Version='$Latest'
+
+            latestAutoScalingGroupName=$(aws autoscaling describe-auto-scaling-groups --profile demouser --query "sort_by(AutoScalingGroups, &CreatedTime)[-1].[AutoScalingGroupName]" --output "text")
+            echo "latest AutoScalingGroupName:"
+            echo $latestAutoScalingGroupName
+
+            aws autoscaling update-auto-scaling-group --auto-scaling-group-name  $latestAutoScalingGroupName --launch-template LaunchTemplateId=$latestLaunchTemplateId,Version='$Latest'
+
             latestVersion=$(aws ec2 describe-launch-templates --launch-template-id $latestLaunchTemplateId --query "sort_by(LaunchTemplates, &CreateTime)[-1].[LatestVersionNumber]" --output "text")
             echo "latestVersion:"
             echo $latestVersion
+
             integerVersion=[int]$latestVersion
             echo "integerVersion:"
             echo $integerVersion
+
             $incrementValue = 1
+
             $updatedVersion = $integerVersion + $incrementValue
             echo "updatedVersion:"
             echo $updatedVersion
+
             aws ec2 create-launch-template-version --launch-template-id $latestLaunchTemplateId --version-description $updatedVersion --source-version 1 --launch-template-data "ImageId=$latestAmi"
-            aws autoscaling start-instance-refresh --auto-scaling-group-name vpc-demo-auto-scaling-group --preferences "InstanceWarmup=200"
+
+            aws autoscaling start-instance-refresh --auto-scaling-group-name $latestAutoScalingGroupName --preferences "InstanceWarmup=200"
           fi
