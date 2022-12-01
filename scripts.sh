@@ -24,12 +24,12 @@ sudo systemctl status tomcat.service
 #ss -ltn
 #sudo ufw allow from any to any port 8080 proto tcp
 
-#sudo apt-cache search mysql-server
-#sudo apt info -a mysql-server-8.0
-#sudo apt-get install mysql-server-8.0 -y
-#sudo systemctl is-enabled mysql.service
-#sudo systemctl start mysql.service
-#sudo systemctl status mysql.service
+sudo apt-cache search mysql-server
+sudo apt info -a mysql-server-8.0
+sudo apt-get install mysql-server-8.0 -y
+sudo systemctl is-enabled mysql.service
+sudo systemctl start mysql.service
+sudo systemctl status mysql.service
 #export pwd=abc
 #echo $pwd
 ##export altercmd=\Alter user 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'Root@123'\
