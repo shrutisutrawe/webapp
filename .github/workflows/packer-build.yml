@@ -87,7 +87,7 @@ jobs:
             echo "latest template id:"
             echo $latestLaunchTemplateId
             aws autoscaling update-auto-scaling-group --auto-scaling-group-name  vpc-demo-auto-scaling-group --launch-template LaunchTemplateId=$latestLaunchTemplateId,Version='$Latest'
-            aws ec2 create-launch-template-version --launch-template-id $latestLaunchTemplateId --version-description version2 --source-version 1 --launch-template-data
+            aws ec2 create-launch-template-version --launch-template-id $latestLaunchTemplateId --version-description version2 --source-version 1 --launch-template-data "ImageId=$latestAmi"
             aws autoscaling start-instance-refresh --auto-scaling-group-name vpc-demo-auto-scaling-group --preferences "InstanceWarmup=200"
           fi
           env:
