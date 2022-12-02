@@ -80,7 +80,7 @@ public class AmazonSNSUtil {
             throw new WebappExceptions("Exception while publishing message to SNS", e);
         }
 
-        logger.info("Published message to send notification to user");
+        logger.info("Published message to send notification to user successfully");
     }
 
     private String buildUserEmailVerificationMessage(NotificationMessage notificationMessage) throws JsonProcessingException {
