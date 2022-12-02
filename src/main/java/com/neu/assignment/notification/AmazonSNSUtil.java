@@ -86,7 +86,7 @@ public class AmazonSNSUtil {
     private String buildUserEmailVerificationMessage(NotificationMessage notificationMessage) throws JsonProcessingException {
         Map<String, String> messageMap = new HashMap<>();
         String verificationLink = "https://" + serviceHostedDNSName + ":" +
-                "/v2/verifyUserEmail?" +
+                "/v1/verifyUserEmail?" +
                 "email=" + notificationMessage.getUsername() +
                 "&" +
                 "token=" + notificationMessage.getOneTimeVerificationToken();
