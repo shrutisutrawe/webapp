@@ -185,4 +185,5 @@ curl -v http://localhost:8080/healthz
 - ``GET`` request to ``http://localhost:8080/v1/documents/{doc_id}`` and verify the response
 - ``GET`` request to ``http://localhost:8080/v1/documents/`` and verify the response
 - ``DELETE`` request to ``http://localhost:8080/v1/documents/{doc_id}`` and verify the response
+- ``GET`` request to ``http://localhost:8080/v1/verifyUserEmail?email=user@example.com&token=sometoken`` and verify the response
 
